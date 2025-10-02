@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Trebuchet MS", arial sans-serif;
+  --default-font-family: var(--font-sans);
+
+  /* custom brand colors */
+  --color-brand-blue: #004990;
+  --color-brand-red: #d32f2f;
+  --color-brand-yellow: #ffd600;
+  --color-brand-gray: #3e434a;
+}
+
+/* Performance and CLS optimizations */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 5000px; /* Estimate height for better CLS */
+}
+
+/* Prevent layout shifts */
+img {
+  aspect-ratio: attr(width) / attr(height);
+}
+
+/* Smooth loading states */
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Optimize scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Reduce layout shifts for dynamic content */
+.min-h-fill {
+  min-height: 100vh;
+}
+/* Nuclear option for footer CLS */
+footer {
+  content-visibility: auto;
+  contain-intrinsic-size: 320px; /* Exact height of your footer */
+  position: relative;
+  z-index: 1;
+}
+
+/* Force footer to reserve space in initial render */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+footer {
+  flex-shrink: 0;
+}
