@@ -1,6 +1,7 @@
 // src/App.jsx
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -28,6 +29,7 @@ const LoadingFallback = () => (
 function App() {
   return (
     <Router>
+      <SpeedInsights />
       <div className="bg-gray-100 min-h-screen flex flex-col">
         <Header />
         
