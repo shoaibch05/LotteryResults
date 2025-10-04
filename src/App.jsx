@@ -5,6 +5,8 @@ import { SpeedInsights } from "@vercel/speed-insights/react"
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import AdminLogin from "./admin/AdminLogin";
+import UniversalFAQ from "./Pages/StaticPages/Faqs";
 
 // Lazy load pages with better chunk names
 const Home = lazy(() => import(/* webpackChunkName: "home" */ "./Pages/Home"));
@@ -45,6 +47,8 @@ function App() {
               <Route path="/:slug/evening" element={<EveningResults />} />
               <Route path="/:slug/HotNumbers" element={<HotNumbersPage />} />
               <Route path="/:slug/HotNumbers/checkNumbers" element={<HotNumberResult />} />
+              <Route path="/faqs" element={<UniversalFAQ />} />
+              <Route path="/admin" element={<AdminLogin />} />
             </Routes>
           </Suspense>
         </main>

@@ -91,7 +91,7 @@ const navItems = [
     label: "More",
     url: "#",
     links: [
-      { name: "General FAQ's", url: "/generalfaqs" },
+      { name: "General FAQ's", url: "/faqs" },
       { name: "How To Claim", url: "/how to claim" },
       { name: "Privacy Policy", url: "/privacy" },
       { name: "Terms & Condition", url: "/terms&condition" },
@@ -105,17 +105,40 @@ const navItems = [
 export default function Header({ headerbgColor = "bg-white" }) {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+
+  // Close mobile menu when route changes
+  const handleLinkClick = () => {
+    setMobileMenuOpen(false);
+    setOpenDropdown(null);
+  };
+
+  // Close mobile menu when clicking outside (optional enhancement)
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      setMobileMenuOpen(false);
+      setOpenDropdown(null);
+    }
+  };
 
   return (
     <header className={`${headerbgColor} text-black px-4 md:px-12 py-3`}>
       <div className="flex justify-between items-center">
         {/* Logo */}
         <div className="flex items-center bg-red-600">
-          <img src={NYLotto} alt="NY Lotto" className="h-10" width="120" height="40" decoding="async" />
+          <Link to="/" onClick={handleLinkClick}>
+            <img 
+              src={NYLotto} 
+              alt="NY Lotto" 
+              className="h-10" 
+              width="120" 
+              height="40" 
+              decoding="async" 
+            />
+          </Link>
         </div>
 
         {/* Desktop Nav */}
-        {/* Desktop Nav (only on lg and up) */}
         <nav className="hidden lg:flex gap-3 relative">
           {navItems.map((item, index) => (
             <div
@@ -134,13 +157,22 @@ export default function Header({ headerbgColor = "bg-white" }) {
               {/* Dropdown (desktop) */}
               {openDropdown === index && (
                 <div className="absolute left-0 w-56 bg-blue-900 text-white shadow-lg z-50 p-3">
-                  <img src={item.logo} alt={item.label} className="mb-4" width="160" height="40" decoding="async" loading="lazy" />
+                  <img 
+                    src={item.logo} 
+                    alt={item.label} 
+                    className="mb-4" 
+                    width="160" 
+                    height="40" 
+                    decoding="async" 
+                    loading="lazy" 
+                  />
                   <hr className={`border-2 ${item.borderColor}`} />
                   {item.links.map((link, idx) => (
                     <Link
                       key={idx}
                       to={link.url}
                       className="flex justify-center gap-3 px-4 py-2 hover:bg-blue-700 transition-colors"
+                      onClick={() => setOpenDropdown(null)}
                     >
                       <span>{link.name}</span>
                     </Link>
@@ -154,7 +186,7 @@ export default function Header({ headerbgColor = "bg-white" }) {
           </button>
         </nav>
 
-        {/* Desktop Search (lg and up) */}
+        {/* Desktop Search */}
         <div className="hidden lg:block">
           <input
             type="text"
@@ -163,7 +195,7 @@ export default function Header({ headerbgColor = "bg-white" }) {
           />
         </div>
 
-        {/* Hamburger (mobile + tablets, until lg) */}
+        {/* Hamburger Menu */}
         <button
           className="lg:hidden text-2xl"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -172,50 +204,84 @@ export default function Header({ headerbgColor = "bg-white" }) {
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu with Backdrop */}
       {mobileMenuOpen && (
-        <div className="lg:hidden mt-3 bg-blue-900 text-white rounded-lg shadow-lg p-4 space-y-4">
-          {navItems.map((item, index) => (
-            <div key={index}>
-              <button
-                className="w-full flex justify-between items-center font-bold px-2 py-2 bg-blue-800 rounded"
-                onClick={() =>
-                  setOpenDropdown(openDropdown === index ? null : index)
-                }
+        <div 
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40 mt-0"
+          onClick={handleBackdropClick}
+        >
+          <div 
+            className="bg-blue-900 text-white rounded-lg shadow-lg p-4 space-y-4 mx-4 mt-20 max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()} // Prevent backdrop click when clicking inside menu
+          >
+            {/* Close Button */}
+            <div className="flex justify-between items-center">
+              <h3 className="font-bold text-lg">Menu</h3>
+              <button 
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-2xl font-bold hover:text-red-400"
               >
-                {item.label} <span>▼</span>
+                ×
               </button>
-
-              {/* Mobile Dropdown */}
-              {openDropdown === index && (
-                <div className="mt-2 pl-4 text-center  space-y-2">
-                  <img src={item.logo} alt={item.label} />
-                  <hr className={`border-2 ${item.borderColor} mb-2`} />
-                  {item.links.map((link, idx) => (
-                    <Link
-                      key={idx}
-                      to={link.url}
-                      className="block py-1 hover:underline"
-                    >
-                      {link.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
             </div>
-          ))}
 
-          {/* Tickets Btn */}
-          <button className="block w-full font-bold bg-yellow-400 text-black px-3 py-2 rounded">
-            Tickets
-          </button>
+            {navItems.map((item, index) => (
+              <div key={index}>
+                <button
+                  className="w-full flex justify-between items-center font-bold px-4 py-3 bg-blue-800 rounded-lg hover:bg-blue-700 transition-colors"
+                  onClick={() =>
+                    setOpenDropdown(openDropdown === index ? null : index)
+                  }
+                >
+                  <span>{item.label}</span>
+                  <span className={`transform transition-transform ${openDropdown === index ? 'rotate-180' : ''}`}>
+                    ▼
+                  </span>
+                </button>
 
-          {/* Mobile Search */}
-          <input
-            type="text"
-            placeholder="Search..."
-            className="mt-3 w-full px-3 py-1 rounded bg-white text-black border-2"
-          />
+                {/* Mobile Dropdown */}
+                {openDropdown === index && (
+                  <div className="mt-2 pl-4 text-center space-y-2 bg-blue-800 rounded-lg p-3">
+                    <img 
+                      src={item.logo} 
+                      alt={item.label} 
+                      className="mx-auto mb-3 max-w-[140px]" 
+                    />
+                    <hr className={`border-2 ${item.borderColor} mb-3`} />
+                    <div className="space-y-2">
+                      {item.links.map((link, idx) => (
+                        <Link
+                          key={idx}
+                          to={link.url}
+                          className="block py-2 px-3 hover:bg-blue-600 rounded transition-colors"
+                          onClick={handleLinkClick}
+                        >
+                          {link.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {/* Tickets Button */}
+            <button 
+              className="block w-full font-bold bg-yellow-400 text-black px-4 py-3 rounded-lg hover:bg-yellow-500 transition-colors"
+              onClick={handleLinkClick}
+            >
+              Buy Tickets
+            </button>
+
+            {/* Mobile Search */}
+            <div className="pt-2">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="w-full px-4 py-2 rounded bg-white text-black border-2"
+              />
+            </div>
+          </div>
         </div>
       )}
     </header>

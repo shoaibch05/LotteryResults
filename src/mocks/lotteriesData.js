@@ -15,7 +15,7 @@ const lotteriesData = {
       { name: "Grace St. John", prize: "426 million", date: "August 23, 2017" },
     ],
     history:
-      "The New York Lotto was first introduced in 1978, making it one of the oldest state lotteries in the United States. Over the decades, it has created countless millionaires and contributed billions of dollars to education funding across New York State. The game has seen record-breaking jackpots, exciting rollovers, and memorable stories of winners who changed their lives overnight.",
+      ["The New York Lotto was first introduced in 1978, making it one of the oldest state lotteries in the United States. Over the decades, it has created countless millionaires and contributed billions of dollars to education funding across New York State. The game has seen record-breaking jackpots, exciting rollovers, and memorable stories of winners who changed their lives overnight."],
     faqs: [
       { q: "How do I play NY Lotto?", a: "Select six numbers from 1 to 59 or use Quick Pick." },
       { q: "What time is the draw?", a: "Every Wednesday and Saturday at 8:15 pm ET." },
@@ -36,7 +36,7 @@ const lotteriesData = {
       { name: "Powerball Group", prize: "1.586 billion", date: "January 13, 2016" },
     ],
     history:
-      "Launched in 1992, Powerball is famous for its massive jackpots and is played in 45 states plus territories. The record-breaking $1.586 billion jackpot in 2016 cemented its place as the most iconic lottery in the U.S.",
+      ["Launched in 1992, Powerball is famous for its massive jackpots and is played in 45 states plus territories. The record-breaking $1.586 billion jackpot in 2016 cemented its place as the most iconic lottery in the U.S."],
     faqs: [
       { q: "How much is a ticket?", a: "$2 per play, $3 with Power Play." },
       { q: "When are the draws?", a: "Monday, Wednesday, and Saturday at 10:59 pm ET." },
@@ -57,7 +57,7 @@ const lotteriesData = {
       { name: "Michigan Lottery Club", prize: "1.05 billion", date: "January 22, 2021" },
     ],
     history:
-      "Originally called 'The Big Game' in 1996, it became Mega Millions in 2002. Known for record-breaking jackpots, it remains one of the most popular lotteries in the U.S.",
+      ["Originally called 'The Big Game' in 1996, it became Mega Millions in 2002. Known for record-breaking jackpots, it remains one of the most popular lotteries in the U.S."],
     faqs: [
       { q: "How much is a ticket?", a: "$2 per play, $3 with Megaplier." },
       { q: "When are the draws?", a: "Every Tuesday and Friday at 11:00 pm ET." },
@@ -79,7 +79,7 @@ const lotteriesData = {
       { name: "Michael R.", prize: "$10,000", date: "March 3, 2022" },
     ],
     history:
-      "Introduced in 1981, Win 4 quickly became a popular draw game for players who enjoy daily lottery action. With multiple play styles and twice-daily draws, it offers flexibility and steady excitement for players.",
+      ["Introduced in 1981, Win 4 quickly became a popular draw game for players who enjoy daily lottery action. With multiple play styles and twice-daily draws, it offers flexibility and steady excitement for players."],
     faqs: [
       { q: "How often are draws?", a: "Twice daily, at midday and evening." },
       { q: "What is the top prize?", a: "Up to $5,000 on a $1 Straight play." },
@@ -101,7 +101,7 @@ const lotteriesData = {
       { name: "Lucky 3 Group", prize: "$2,500", date: "May 22, 2022" },
     ],
     history:
-      "Launched in 1980, Numbers was the first daily lottery game introduced in New York. It has remained popular for decades due to its simple format and frequent draws, appealing to players who enjoy smaller but more frequent prizes.",
+      ["Launched in 1980, Numbers was the first daily lottery game introduced in New York. It has remained popular for decades due to its simple format and frequent draws, appealing to players who enjoy smaller but more frequent prizes."],
     faqs: [
       { q: "How much can I win?", a: "Up to $500 for a $1 Straight play." },
       { q: "When are draws?", a: "Every day, midday and evening." },
@@ -123,7 +123,7 @@ const lotteriesData = {
       { name: "Queens Syndicate", prize: "$125,000", date: "April 5, 2021" },
     ],
     history:
-      "Take 5 was launched in 1992 and has since become one of New York’s favorite daily lottery games. Its simple format and affordable ticket price make it a consistent choice for casual lottery players.",
+      ["Take 5 was launched in 1992 and has since become one of New York’s favorite daily lottery games. Its simple format and affordable ticket price make it a consistent choice for casual lottery players.",],
     faqs: [
       { q: "When are draws?", a: "Every day at 11:21 pm ET." },
       { q: "What is the jackpot?", a: "Jackpot varies based on ticket sales and number of winners." },

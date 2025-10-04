@@ -59,7 +59,7 @@ const LotteryPage = () => {
     }, [visible]);
 
     return (
-      <div ref={ref} className="cv-auto">
+      <div ref={ref} >
         {visible ? children : <div className={`${heightClass} bg-gray-100 rounded mb-8`} />}
       </div>
     );

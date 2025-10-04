@@ -19,6 +19,7 @@ const Footer = () => {
       style={{ 
         backgroundColor: '#3e434a',
         borderTop: '1px solid #e5e7eb',
+        height: '320px',
         padding: '0.5rem 0',
         marginTop: 'auto', // Critical for flex layout
         width: '100%',
@@ -26,11 +27,11 @@ const Footer = () => {
       }}
     >
         <div 
-        className="max-w-7xl mx-auto text-center text-sm text-white px-6 py-8 w-full"
+        className="max-w-7xl mx-auto text-center text-sm text-white px-6 py-4 w-full"
         style={{
           // Ensure consistent spacing
-          paddingTop: '2rem',
-          paddingBottom: '2rem',
+          paddingTop: '1rem',
+          paddingBottom: '1rem',
           minHeight: '280px',
           display: 'flex',
           flexDirection: 'column',
@@ -43,11 +44,11 @@ const Footer = () => {
         </div>
 
         {/* Paragraphs with fixed heights to prevent shifts */}
-        <div className="space-y-4 mb-6">
+        <div className="space-y-4 mb-2">
           {footerContent.paragraphs.map((paragraph, index) => (
             <div 
               key={index}
-              className="leading-relaxed min-h-[60px] flex items-center justify-center"
+              className="leading-relaxed min-h-[30px] flex items-center justify-center"
             >
               <p>{paragraph}</p>
             </div>
@@ -56,8 +57,8 @@ const Footer = () => {
 
         {/* Navigation links with fixed height */}
         <nav 
-          className="flex justify-center items-center space-x-6 flex-wrap gap-2 min-h-[40px]"
-          style={{ marginTop: '1rem' }}
+          className="flex justify-center items-center space-x-6 flex-wrap gap-2 min-h-[30px]"
+          style={{ marginTop: '0.2rem' }}
         >
           {footerContent.links.map((link, index) => (
             <a 

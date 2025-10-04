@@ -42,12 +42,7 @@ html {
   min-height: 100vh;
 }
 /* Nuclear option for footer CLS */
-footer {
-  content-visibility: auto;
-  contain-intrinsic-size: 320px; /* Exact height of your footer */
-  position: relative;
-  z-index: 1;
-}
+
 
 /* Force footer to reserve space in initial render */
 body {
