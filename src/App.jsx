@@ -3,20 +3,16 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import { SpeedInsights } from "@vercel/speed-insights/react"
 
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import AdminLogin from "./admin/AdminLogin";
-import UniversalFAQ from "./Pages/StaticPages/Faqs";
+// Context providers
+import { AuthProvider } from "./context/AuthContext";
+import { RoleProvider } from "./context/RoleContext";
 
-// Lazy load pages with better chunk names
-const Home = lazy(() => import(/* webpackChunkName: "home" */ "./Pages/Home"));
-const LotteryPage = lazy(() => import(/* webpackChunkName: "lottery" */ "./Pages/LotteryPage"));
-const ResultsOverview = lazy(() => import(/* webpackChunkName: "results" */ "./Pages/ResultsOverview"));
-const ResultDetail = lazy(() => import(/* webpackChunkName: "detail" */ "./Pages/ResultDetail"));
-const MiddayResults = lazy(() => import(/* webpackChunkName: "midday" */ "./Pages/MiddayResults"));
-const EveningResults = lazy(() => import(/* webpackChunkName: "evening" */ "./Pages/EveningResults"));
-const HotNumbersPage = lazy(() => import(/* webpackChunkName: "hot-numbers" */ "./Pages/HotNumberPage"));
-const HotNumberResult = lazy(() => import(/* webpackChunkName: "hot-check" */ "./Pages/HotNumberResult"));
+// Route components
+import PublicRoutes from "./routes/PublicRoutes";
+import AdminRoutes from "./routes/AdminRoutes";
+
+// Lazy load admin login page
+const AdminLogin = lazy(() => import(/* webpackChunkName: "admin-login" */ "./Pages/admin/Login"));
 
 // Better loading component
 const LoadingFallback = () => (
@@ -30,32 +26,25 @@ const LoadingFallback = () => (
 
 function App() {
   return (
-    <Router>
-      <SpeedInsights />
-      <div className="bg-gray-100 min-h-screen flex flex-col">
-        <Header />
-        
-        <main className="flex-grow">
+    <AuthProvider>
+      <RoleProvider>
+        <Router>
+          <SpeedInsights />
           <Suspense fallback={<LoadingFallback />}>
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/:slug" element={<LotteryPage />} />
-              <Route path="/:slug/info" element={<LotteryPage />} />
-              <Route path="/:slug/results" element={<ResultsOverview />} />
-              <Route path="/:slug/results/:date" element={<ResultDetail />} />
-              <Route path="/:slug/midday" element={<MiddayResults />} />
-              <Route path="/:slug/evening" element={<EveningResults />} />
-              <Route path="/:slug/HotNumbers" element={<HotNumbersPage />} />
-              <Route path="/:slug/HotNumbers/checkNumbers" element={<HotNumberResult />} />
-              <Route path="/faqs" element={<UniversalFAQ />} />
-              <Route path="/admin" element={<AdminLogin />} />
+              {/* Admin login - must come before admin routes */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+              
+              {/* Admin panel routes - must come before public routes */}
+              <Route path="/admin/*" element={<AdminRoutes />} />
+              
+              {/* Public routes - catch-all must come last */}
+              <Route path="/*" element={<PublicRoutes />} />
             </Routes>
           </Suspense>
-        </main>
-
-        <Footer />
-      </div>
-    </Router>
+        </Router>
+      </RoleProvider>
+    </AuthProvider>
   );
 }
 

@@ -3,6 +3,7 @@ import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
 const LotteryHero = lazy(() => import("../components/page_components/LotteryHero"));
+// import LotteryHero from "../components/page_components/LotteryHero";
 const LotteryHistory = lazy(() => import("../components/page_components/LotteryHistory"));
 const HowToPlay = lazy(() => import("../components/page_components/HowtoPlay"));
 const TopWinners = lazy(() => import("../components/page_components/TopWinners"));
@@ -92,7 +93,7 @@ const LotteryPage = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <Suspense fallback={<div className="h-28 bg-gray-100 rounded mb-8 animate-pulse" />}> 
+      <Suspense fallback={<div className="h-28 bg-white rounded mb-8 animate-pulse" />}> 
         <LotteryHero title={lottery.name} description={lottery.description} />
       </Suspense>
 

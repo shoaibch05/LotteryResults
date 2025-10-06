@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@theme {
+:root {
   --font-sans: "Trebuchet MS", arial sans-serif;
   --default-font-family: var(--font-sans);
 
@@ -8,7 +8,7 @@
   --color-brand-blue: #004990;
   --color-brand-red: #d32f2f;
   --color-brand-yellow: #ffd600;
-  --color-brand-gray: #3e434a;
+  --color-brand-gray: #313438;
 }
 
 /* Performance and CLS optimizations */
@@ -57,4 +57,72 @@ main {
 
 footer {
   flex-shrink: 0;
+}
+
+/* Admin panel specific styles */
+.admin-layout {
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+.admin-sidebar {
+  width: 16rem;
+  background-color: white;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.admin-content {
+  flex: 1;
+  overflow-x: hidden;
+}
+
+/* Performance optimizations for admin panel */
+.admin-table {
+  contain: layout style;
+}
+
+.admin-card {
+  contain: layout style;
+}
+
+/* Smooth transitions for admin components */
+.admin-transition {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Loading states */
+.admin-loading {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
+/* Form optimizations */
+.admin-form input:focus,
+.admin-form textarea:focus,
+.admin-form select:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+/* Button optimizations */
+.admin-button {
+  transition: all 0.15s ease-in-out;
+  will-change: transform;
+}
+
+.admin-button:hover {
+  transform: translateY(-1px);
+}
+
+.admin-button:active {
+  transform: translateY(0);
 }

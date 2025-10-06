@@ -1,4 +1,4 @@
-// Simpler version - just ensure consistent rendering
+// src/components/page_components/LotteryHistory.jsx
 import { memo, useLayoutEffect } from "react";
 
 const LotteryHistory = ({ history = [] }) => {
@@ -6,22 +6,26 @@ const LotteryHistory = ({ history = [] }) => {
     ? history 
     : [history].filter(Boolean);
 
-  // Use layout effect to log and ensure consistent behavior
   useLayoutEffect(() => {
+    // This console log will help you debug when the layout is calculated
     console.log('📐 LotteryHistory layout calculated with:', contentArray.length, 'paragraphs');
   }, [contentArray.length]);
 
   return (
     <section 
-      className="bg-white shadow-md rounded-lg  p-6 mb-8"
+      className="bg-white shadow-md rounded-lg p-6 mb-8"
       style={{ 
-        contain: 'layout' 
+        contain: 'layout' // Helps isolate layout calculations for this section
       }}
     >
       <h2 className="text-2xl font-bold text-black mb-4">
         History & Background
       </h2>
       
+      {/* 
+        This div will now contain the fully loaded history.
+        We ensure its height is stable.
+      */}
       <div className="space-y-4 text-gray-700 leading-relaxed">
         {contentArray.map((para, idx) => (
           <p key={idx}>{para}</p>

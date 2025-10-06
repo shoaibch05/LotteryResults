@@ -1,5 +1,6 @@
 import { CheckerTable } from "../components/page_components/checker/CheckerTable";
-import { useHotNumbers } from "../store/HotNumbersContext";
+import { useHotNumbers } from "../context/HotNumbersContext";
+
 
 const HotNumberResult = () => {
   const { selectedMain, selectedPowerball, powerPlay } = useHotNumbers();
