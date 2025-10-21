@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { getAllRecentsPosts } from "../../api/postApi";
 
 const LatestPosts = () => {
   const [posts, setPosts] = useState([]);
@@ -14,7 +15,7 @@ const LatestPosts = () => {
         "Check the latest winning numbers and prize breakdown for the New York Lotto. See if you're one of the lucky winners!",
       category: "lotto",
       date: "2025-10-05",
-    //   slug: "new-york-lotto-october-5-2025",
+      //   slug: "new-york-lotto-october-5-2025",
     },
     {
       _id: "2",
@@ -22,8 +23,8 @@ const LatestPosts = () => {
       description:
         "Discover the Powerball results and find out if anyone hit the jackpot this week. Explore detailed prize payouts here.",
       category: "powerball",
-      date: "2025-10-05"
-    //   slug: "powerball-october-5-2025",
+      date: "2025-10-05",
+      //   slug: "powerball-october-5-2025",
     },
     {
       _id: "3",
@@ -31,24 +32,25 @@ const LatestPosts = () => {
       description:
         "Get the latest Mega Millions numbers and see the list of winning tickets across different states.",
       category: "megamillions",
-      date : "2025-10-6"
-    //   slug: "mega-millions-october-4-2025",
+      date: "2025-10-6",
+      //   slug: "mega-millions-october-4-2025",
     },
   ];
-
   useEffect(() => {
-    // Simulate API delay
-    const timer = setTimeout(() => {
-      setPosts(mockPosts);
-    }, 800);
-    return () => clearTimeout(timer);
+    async function getPost() {
+      try {
+        const data = await getAllRecentsPosts();
+        setPosts(data);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
+    }
+    getPost();
   }, []);
 
   if (!posts.length)
     return (
-      <p className="text-center py-10 text-gray-500">
-        Loading latest posts...
-      </p>
+      <p className="text-center py-10 text-gray-500">Loading latest posts...</p>
     );
 
   return (
@@ -61,7 +63,7 @@ const LatestPosts = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {posts.map((post) => (
             <div
-              key={post._id}
+              key={post.id}
               className="bg-white shadow-md rounded-xl p-5 flex flex-col justify-between hover:shadow-lg transition"
             >
               <div>
@@ -69,13 +71,15 @@ const LatestPosts = () => {
                   {post.title}
                 </h3>
                 <p className="text-gray-600 text-sm line-clamp-3 mb-4">
-                  {post.description}
+                  {post.content}
                 </p>
               </div>
 
               <div className="flex justify-between items-center mt-auto">
                 <button
-                  onClick={() => navigate(`/${post.category}/results/${post.date}`)}
+                  onClick={() =>
+                    navigate(`/${post.category}/results/${post.date}`)
+                  }
                   className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-md text-sm transition"
                 >
                   View More

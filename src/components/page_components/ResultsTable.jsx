@@ -5,17 +5,18 @@ import dayjs from "dayjs";
 const ResultsTable = ({ results, hasBonus = false }) => {
   // check globally if any row has midday / evening
   const showMidday = results.some((row) => row.midday && row.midday.length > 0);
-  const showEvening = results.some((row) => row.evening && row.evening.length > 0);
+  const showEvening = results.some(
+    (row) => row.evening && row.evening.length > 0
+  );
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
+    <div className="bg-white rounded-lg shadow overflow-x-auto">
       <table className="w-full text-sm">
         <thead className="bg-blue-700 text-white">
           <tr>
             <th className="py-3 px-4">Draw Date</th>
             {showMidday && <th className="py-3 px-4">Midday</th>}
             {showEvening && <th className="py-3 px-4">Evening</th>}
-            <th className="py-3 px-4">Jackpot</th>
           </tr>
         </thead>
 
@@ -78,9 +79,6 @@ const ResultsTable = ({ results, hasBonus = false }) => {
                   )}
                 </td>
               )}
-
-              {/* Jackpot */}
-              <td className="py-3 px-4 text-center">{row.jackpot || "-"}</td>
             </tr>
           ))}
         </tbody>

@@ -6,6 +6,8 @@ import AdminLayout from "../components/admin/layout/AdminLayout";
 // Lazy load admin pages for better performance
 const Dashboard = lazy(() => import("../Pages/admin/Dashboard"));
 const Posts = lazy(() => import("../Pages/admin/Posts"));
+const Jackpots = lazy(() => import("../Pages/admin/Jackpot"));
+const AdminCategoriesPage = lazy(() => import("../Pages/admin/Categories"));
 const Users = lazy(() => import("../Pages/admin/Users"));
 const SEO = lazy(() => import("../Pages/admin/SEO"));
 const SiteSettings = lazy(() => import("../Pages/admin/SiteSettings"));
@@ -15,6 +17,10 @@ import PostList from "../components/admin/posts/PostList";
 import CreatePost from "../components/admin/posts/CreatePost";
 import EditPost from "../components/admin/posts/EditPost";
 import AdminPanel from "../Pages/admin/AdsPlacements";
+import CategoryInfoPage from "../components/admin/categoresinfo/categoryinfo";
+import JackpotList from "../components/admin/jackpot/JackpostList";
+import CreateJackpot from "../components/admin/jackpot/createJackpot";
+import EditJackpot from "../components/admin/jackpot/EditJackpot";
 
 // Loading component for admin pages
 const AdminLoadingFallback = () => (
@@ -49,6 +55,22 @@ const AdminRoutes = memo(() => {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="categoriesinfo"
+            element={
+              <ProtectedRoute requiredPermission="canManageCategoriesinfo">
+                <AdminCategoriesPage />
+              </ProtectedRoute>
+            }
+          >
+            {/* <Route index element={<AdminCategoriesPage />} /> */}
+            <Route path=":categoryName" element={<CategoryInfoPage />} />
+            {/* <Route path="new" element={<AdminCategoriesPage />} /> */}
+            <Route
+              path="*"
+              element={<Navigate to="/admin/categoriesinfo" replace />}
+            />
+          </Route>
 
           {/* Posts management - accessible to editors and above */}
           <Route
@@ -63,6 +85,23 @@ const AdminRoutes = memo(() => {
             <Route path="create" element={<CreatePost />} />
             <Route path="edit/:id" element={<EditPost />} />
             <Route path="*" element={<Navigate to="/admin/posts" replace />} />
+          </Route>
+          {/* Jackpot management - accessible to editors and above */}
+          <Route
+            path="Jackpots"
+            element={
+              <ProtectedRoute requiredPermission="manage_jackpot">
+                <Jackpots />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<JackpotList />} />
+            <Route path="create" element={<CreateJackpot />} />
+            <Route path="edit/:id" element={<EditJackpot />} />
+            <Route
+              path="*"
+              element={<Navigate to="/admin/Jackpots" replace />}
+            />
           </Route>
 
           {/* User management - accessible to admins and above */}

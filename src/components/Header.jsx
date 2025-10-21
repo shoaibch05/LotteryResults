@@ -6,6 +6,9 @@ import Numbers from "../assets/numbers-logo-white.svg";
 import Powerball from "../assets/powerball-logo-white.svg";
 import Pick10 from "../assets/pick-10-logo-white.svg";
 import Win4 from "../assets/win-4-logo-white.svg";
+import QuickDraw from "../assets/quick-draw-logo-white.svg";
+import Cash4Life from "../assets/cash-4-life-logo-white.svg";
+import information from "../assets/information-logo.svg";
 import { Link } from "react-router-dom";
 
 const navItems = [
@@ -86,18 +89,50 @@ const navItems = [
       { name: "Hot Numbers", url: "/Take5/HotNumbers" },
     ],
   },
+
   {
-    logo: Pick10,
     label: "More",
-    url: "#",
-    links: [
-      { name: "General FAQ's", url: "/faqs" },
-      { name: "How To Claim", url: "/how to claim" },
-      { name: "Privacy Policy", url: "/privacy" },
-      { name: "Terms & Condition", url: "/terms&condition" },
-      { name: "Disclaimer", url: "/disclaimer" },
-      { name: "Cookie Policy", url: "/cookies" },
-      { name: "Sitemap", url: "/sitemap" },
+    subMenus: [
+      {
+        logo: QuickDraw,
+        label: "Quick Draw",
+        links: [
+          { name: "Quick Draw Results", url: "/quickdraw/results" },
+          { name: "Quick Draw Information", url: "/quickdraw/info" },
+          { name: "Past Winning Numbers", url: "/quickdraw/past" },
+        ],
+        borderColor: "border-pink-500",
+      },
+      {
+        logo: Pick10,
+        label: "Pick 10",
+        links: [
+          { name: "Pick 10 Results", url: "/pick10/results" },
+          { name: "Pick 10 Information", url: "/pick10/info" },
+          { name: "Pick 10 Checker", url: "/pick10/checker" },
+        ],
+        borderColor: "border-orange-400",
+      },
+      {
+        logo: Cash4Life,
+        label: "Cash 4 Life",
+        links: [
+          { name: "Cash 4 Life Results", url: "/cash4life/results" },
+          { name: "Cash 4 Life Information", url: "/cash4life/info" },
+          { name: "Cash4Life Checker", url: "/cash4life/checker" },
+        ],
+        borderColor: "border-green-500",
+      },
+      {
+        label: "Information",
+        logo: information,
+        links: [
+          { name: "FAQs", url: "/faqs" },
+          { name: "Scratch Off Tickets", url: "/scratch" },
+          { name: "Vax & Scratch", url: "/vax-scratch" },
+        ],
+        borderColor: "border-red-500",
+      },
     ],
   },
 ];
@@ -105,7 +140,6 @@ const navItems = [
 export default function Header({ headerbgColor = "bg-white" }) {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
 
   // Close mobile menu when route changes
   const handleLinkClick = () => {
@@ -127,13 +161,13 @@ export default function Header({ headerbgColor = "bg-white" }) {
         {/* Logo */}
         <div className="flex items-center bg-red-600">
           <Link to="/" onClick={handleLinkClick}>
-            <img 
-              src={NYLotto} 
-              alt="NY Lotto" 
-              className="h-10" 
-              width="120" 
-              height="40" 
-              decoding="async" 
+            <img
+              src={NYLotto}
+              alt="NY Lotto"
+              className="h-10"
+              width="120"
+              height="40"
+              decoding="async"
             />
           </Link>
         </div>
@@ -155,30 +189,67 @@ export default function Header({ headerbgColor = "bg-white" }) {
               </Link>
 
               {/* Dropdown (desktop) */}
-              {openDropdown === index && (
-                <div className="absolute left-0 w-56 bg-blue-900 text-white shadow-lg z-50 p-3">
-                  <img 
-                    src={item.logo} 
-                    alt={item.label} 
-                    className="mb-4" 
-                    width="160" 
-                    height="40" 
-                    decoding="async" 
-                    loading="lazy" 
-                  />
-                  <hr className={`border-2 ${item.borderColor}`} />
-                  {item.links.map((link, idx) => (
-                    <Link
-                      key={idx}
-                      to={link.url}
-                      className="flex justify-center gap-3 px-4 py-2 hover:bg-blue-700 transition-colors"
-                      onClick={() => setOpenDropdown(null)}
-                    >
-                      <span>{link.name}</span>
-                    </Link>
-                  ))}
-                </div>
-              )}
+              {openDropdown === index &&
+                (item.subMenus ? (
+                  // 🟦 Mega menu for "More"
+                  <div className="absolute left-0   bg-blue-900 text-white shadow-lg z-50 p-6 grid grid-cols-3 gap-6 w-md">
+                    {item.subMenus.map((submenu, sIndex) => (
+                      <div key={sIndex}>
+                        {submenu.logo && (
+                          <img
+                            src={submenu.logo}
+                            alt={submenu.label}
+                            className="mb-2"
+                            width="160"
+                            height="40"
+                            decoding="async"
+                            loading="lazy"
+                          />
+                        )}
+
+                        <hr
+                          className={`border-t-2 ${submenu.borderColor} mb-3`}
+                        />
+                        {submenu.links.map((link, lIndex) => (
+                          <Link
+                            key={lIndex}
+                            to={link.url}
+                            className="block px-2 py-1 hover:bg-blue-700 rounded transition"
+                            onClick={() => setOpenDropdown(null)}
+                          >
+                            {link.name}
+                          </Link>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  // 🟩 Normal dropdown for others
+                  <div className="absolute left-0 w-56 bg-blue-900 text-white shadow-lg z-50 p-3">
+                    {item.logo && (
+                      <img
+                        src={item.logo}
+                        alt={item.label}
+                        className="mb-4"
+                        width="160"
+                        height="40"
+                        decoding="async"
+                        loading="lazy"
+                      />
+                    )}
+                    <hr className={`border-2 ${item.borderColor}`} />
+                    {item.links.map((link, idx) => (
+                      <Link
+                        key={idx}
+                        to={link.url}
+                        className="flex justify-center gap-3 px-4 py-2 hover:bg-blue-700 transition-colors"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        <span>{link.name}</span>
+                      </Link>
+                    ))}
+                  </div>
+                ))}
             </div>
           ))}
           <button className="font-bold hover:opacity-80 hover:bg-blue-700 hover:text-white px-3 py-2 transition">
@@ -206,18 +277,18 @@ export default function Header({ headerbgColor = "bg-white" }) {
 
       {/* Mobile Menu with Backdrop */}
       {mobileMenuOpen && (
-        <div 
+        <div
           className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40 mt-0"
           onClick={handleBackdropClick}
         >
-          <div 
+          <div
             className="bg-blue-900 text-white rounded-lg shadow-lg p-4 space-y-4 mx-4 mt-20 max-h-[80vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()} // Prevent backdrop click when clicking inside menu
           >
             {/* Close Button */}
             <div className="flex justify-between items-center">
               <h3 className="font-bold text-lg">Menu</h3>
-              <button 
+              <button
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-2xl font-bold hover:text-red-400"
               >
@@ -234,39 +305,77 @@ export default function Header({ headerbgColor = "bg-white" }) {
                   }
                 >
                   <span>{item.label}</span>
-                  <span className={`transform transition-transform ${openDropdown === index ? 'rotate-180' : ''}`}>
+                  <span
+                    className={`transform transition-transform ${
+                      openDropdown === index ? "rotate-180" : ""
+                    }`}
+                  >
                     ▼
                   </span>
                 </button>
 
                 {/* Mobile Dropdown */}
-                {openDropdown === index && (
-                  <div className="mt-2 pl-4 text-center space-y-2 bg-blue-800 rounded-lg p-3">
-                    <img 
-                      src={item.logo} 
-                      alt={item.label} 
-                      className="mx-auto mb-3 max-w-[140px]" 
-                    />
-                    <hr className={`border-2 ${item.borderColor} mb-3`} />
-                    <div className="space-y-2">
-                      {item.links.map((link, idx) => (
-                        <Link
-                          key={idx}
-                          to={link.url}
-                          className="block py-2 px-3 hover:bg-blue-600 rounded transition-colors"
-                          onClick={handleLinkClick}
-                        >
-                          {link.name}
-                        </Link>
+                {openDropdown === index &&
+                  (item.subMenus ? (
+                    // 🟦 Mobile mega menu (stacked)
+                    <div className="mt-2 bg-blue-800 rounded-lg p-4 space-y-6">
+                      {item.subMenus.map((submenu, sIndex) => (
+                        <div key={sIndex}>
+                          {submenu.logo && (
+                            <img
+                              src={submenu.logo}
+                              alt={submenu.label}
+                              className="mx-auto mb-2 max-w-[120px]"
+                            />
+                          )}
+                          <hr
+                            className={`border-t-2 ${submenu.borderColor} mb-3`}
+                          />
+                          <div className="space-y-2 text-center">
+                            {submenu.links.map((link, lIndex) => (
+                              <Link
+                                key={lIndex}
+                                to={link.url}
+                                className="block py-2 px-3 hover:bg-blue-600 rounded transition"
+                                onClick={handleLinkClick}
+                              >
+                                {link.name}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
                       ))}
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    // 🟩 Regular dropdown (unchanged for other items)
+                    <div className="mt-2 pl-4 text-center space-y-2 bg-blue-800 rounded-lg p-3">
+                      {item.logo && (
+                        <img
+                          src={item.logo}
+                          alt={item.label}
+                          className="mx-auto mb-3 max-w-[140px]"
+                        />
+                      )}
+                      <hr className={`border-2 ${item.borderColor} mb-3`} />
+                      <div className="space-y-2">
+                        {item.links.map((link, idx) => (
+                          <Link
+                            key={idx}
+                            to={link.url}
+                            className="block py-2 px-3 hover:bg-blue-600 rounded transition-colors"
+                            onClick={handleLinkClick}
+                          >
+                            {link.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
               </div>
             ))}
 
             {/* Tickets Button */}
-            <button 
+            <button
               className="block w-full font-bold bg-yellow-400 text-black px-4 py-3 rounded-lg hover:bg-yellow-500 transition-colors"
               onClick={handleLinkClick}
             >

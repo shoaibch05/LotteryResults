@@ -1,90 +1,313 @@
-import { memo, useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { memo, useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  getAllcategories,
+  getPostById,
+  getPrizeBreakDownByPost,
+  updatePost,
+} from "../../../api/postApi";
+import EditablePrizeTable from "./PrizeBreakdownTableEditable";
+import {
+  createPrizeBreakdown,
+  deletePrizeBreakdown,
+  updatePrizeBreakdown,
+} from "../../../api/prizwBreakdownApi";
 
 const EditPost = memo(() => {
   const navigate = useNavigate();
   const { id } = useParams();
+
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [middayBreakdown, setMiddayBreakdown] = useState([]);
+  const [eveningBreakdown, setEveningBreakdown] = useState([]);
+  const [deletedRows, setDeletedRows] = useState([]); // Track deleted rows
+
   const [formData, setFormData] = useState({
-    title: '',
-    category: '',
-    status: 'draft',
-    drawDate: '',
-    winningNumbers: '',
-    jackpot: '',
-    description: '',
-    metaTitle: '',
-    metaDescription: '',
-    keywords: ''
+    title: "",
+    category: "",
+    status: "draft",
+    created_at: "",
+    Midday_Winnings: "",
+    Evening_Winnings: "",
+    middayBreakdown: [],
+    eveningBreakdown: [],
+    content: "",
+    meta_title: "",
+    meta_desc: "",
   });
 
-  const categories = [
-    'Powerball',
-    'Mega Millions',
-    'Lotto',
-    'Take 5',
-    'Pick 10',
-    'Quick Draw'
-  ];
+  useEffect(() => {
+    const fetchBreakdowns = async () => {
+      try {
+        const data = await getPrizeBreakDownByPost(id);
+        console.log("Fetched prize breakdown data:", data);
 
-  // Mock data - replace with actual API call
-  const mockPost = {
-    id: 1,
-    title: 'Powerball Results - January 15, 2024',
-    category: 'Powerball',
-    status: 'published',
-    drawDate: '2024-01-15',
-    winningNumbers: '12, 25, 33, 41, 52, Powerball: 8',
-    jackpot: '$500,000,000',
-    description: 'The latest Powerball results are in! Check out the winning numbers and see if you\'re a winner.',
-    metaTitle: 'Powerball Results January 15, 2024 - Winning Numbers',
-    metaDescription: 'Latest Powerball results for January 15, 2024. Check winning numbers and jackpot information.',
-    keywords: 'powerball, results, winning numbers, lottery, jackpot'
+        const midday = data.prizes.filter((p) => p.draw_type === "midday");
+        const evening = data.prizes.filter((p) => p.draw_type === "evening");
+
+        setMiddayBreakdown(midday);
+        setEveningBreakdown(evening);
+        setFormData((prev) => ({
+          ...prev,
+          middayBreakdown: midday,
+          eveningBreakdown: evening,
+        }));
+      } catch (err) {
+        console.error("Error fetching prize breakdowns:", err);
+      }
+    };
+
+    fetchBreakdowns();
+  }, [id]);
+
+  useEffect(() => {
+    async function getcategories() {
+      const res = await getAllcategories();
+      setCategories(res);
+      return res;
+    }
+    getcategories();
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "Midday_Winnings" || name === "Evening_Winnings") {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value.split(",").map((v) => v.trim()),
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
+
+  // Add row locally (no API call)
+  const handleCreateRow = (newRow, session) => {
+    const tempId = `temp_${Date.now()}_${Math.random()}`;
+    const rowWithTempId = { ...newRow, id: tempId, isNew: true };
+
+    if (session === "midday") {
+      setMiddayBreakdown((prev) => [...prev, rowWithTempId]);
+      setFormData((prev) => ({
+        ...prev,
+        middayBreakdown: [...prev.middayBreakdown, rowWithTempId],
+      }));
+    } else if (session === "evening") {
+      setEveningBreakdown((prev) => [...prev, rowWithTempId]);
+      setFormData((prev) => ({
+        ...prev,
+        eveningBreakdown: [...prev.eveningBreakdown, rowWithTempId],
+      }));
+    }
+  };
+
+  // Update row locally (no API call)
+  const handleUpdateRow = (index, updatedRow, session) => {
+    if (session === "midday") {
+      setMiddayBreakdown((prev) =>
+        prev.map((r, i) => (i === index ? updatedRow : r))
+      );
+      setFormData((prev) => ({
+        ...prev,
+        middayBreakdown: prev.middayBreakdown.map((r, i) =>
+          i === index ? updatedRow : r
+        ),
+      }));
+    } else if (session === "evening") {
+      setEveningBreakdown((prev) =>
+        prev.map((r, i) => (i === index ? updatedRow : r))
+      );
+      setFormData((prev) => ({
+        ...prev,
+        eveningBreakdown: prev.eveningBreakdown.map((r, i) =>
+          i === index ? updatedRow : r
+        ),
+      }));
+    }
+  };
+
+  // Delete row locally (track for later deletion from backend)
+  const handleDeleteRow = (index, rowId, session) => {
+    const row =
+      session === "midday" ? middayBreakdown[index] : eveningBreakdown[index];
+
+    // Only track for deletion if it's an existing row (not a temp ID)
+    if (row && !row.isNew && !String(rowId).startsWith("temp_")) {
+      setDeletedRows((prev) => [...prev, rowId]);
+    }
+
+    if (session === "midday") {
+      setMiddayBreakdown((prev) => prev.filter((_, i) => i !== index));
+      setFormData((prev) => ({
+        ...prev,
+        middayBreakdown: prev.middayBreakdown.filter((_, i) => i !== index),
+      }));
+    } else if (session === "evening") {
+      setEveningBreakdown((prev) => prev.filter((_, i) => i !== index));
+      setFormData((prev) => ({
+        ...prev,
+        eveningBreakdown: prev.eveningBreakdown.filter((_, i) => i !== index),
+      }));
+    }
   };
 
   useEffect(() => {
-    // Mock API call to fetch post data
-    const fetchPost = async () => {
+    const fetchpostbyId = async () => {
       setLoading(true);
       try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 500));
-        setFormData(mockPost);
+        const data = await getPostById(id);
+        const formattedDate = data.created_at
+          ? new Date(data.created_at).toISOString().split("T")[0]
+          : "";
+        setLoading(false);
+        setFormData({
+          ...data,
+          created_at: formattedDate,
+        });
       } catch (error) {
-        console.error('Error fetching post:', error);
+        console.error("Error fetching categories:", error);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchPost();
+    fetchpostbyId();
   }, [id]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // Mock API call - replace with actual backend
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Here you would typically:
-      // 1. Update the post in database
-      // 2. Update sitemap.xml if URL changed
-      // 3. Send email notifications if status changed to published
-      
-      console.log('Post updated:', formData);
-      navigate('/admin/posts');
+      // 1. Update the main post first
+
+      await updatePost(id, formData);
+
+      // 2. Process deleted rows
+
+      for (const rowId of deletedRows) {
+        try {
+          await deletePrizeBreakdown(rowId);
+          console.log(`✓ Deleted row: ${rowId}`);
+        } catch (err) {
+          console.error(`✗ Failed to delete row ${rowId}:`, err);
+          alert(`Failed to delete row: ${err.message}`);
+        }
+      }
+
+      // 3. Process midday breakdowns
+
+      for (const row of formData.middayBreakdown) {
+        const isNewRow =
+          row.isNew === true || String(row.id).startsWith("temp_");
+
+        if (isNewRow) {
+          // CREATE new row
+          const { id: tempId, isNew, ...rowData } = row;
+
+          // Make sure we have all required fields
+          const dataToCreate = {
+            category: rowData.category || "",
+            winners: rowData.winners || 0,
+            draw_type: "midday",
+            post_id: id, // The post ID from URL params
+            prize_amount: rowData.prize_amount || null,
+          };
+
+          try {
+            const result = await createPrizeBreakdown(
+              dataToCreate,
+              "midday",
+              id
+            );
+            console.log("✓ Created midday row:", result);
+          } catch (err) {
+            console.error("✗ Failed to create midday row:", err);
+            alert(`Failed to create midday row: ${err.message}`);
+          }
+        } else {
+          // UPDATE existing row
+
+          try {
+            const result = await updatePrizeBreakdown(row);
+            console.log("✓ Updated midday row:", result);
+          } catch (err) {
+            console.error("✗ Failed to update midday row:", err);
+            alert(`Failed to update midday row: ${err.message}`);
+          }
+        }
+      }
+
+      // 4. Process evening breakdowns
+
+      for (const row of formData.eveningBreakdown) {
+        const isNewRow =
+          row.isNew === true || String(row.id).startsWith("temp_");
+
+        if (isNewRow) {
+          // CREATE new row
+          const { id: tempId, isNew, ...rowData } = row;
+
+          // Make sure we have all required fields
+          const dataToCreate = {
+            category: rowData.category || "",
+            winners: rowData.winners || 0,
+            draw_type: "evening",
+            post_id: id, // The post ID from URL params
+            prize_amount: rowData.prize_amount || null,
+          };
+
+          try {
+            const result = await createPrizeBreakdown(
+              dataToCreate,
+              "evening",
+              id
+            );
+            console.log("✓ Created evening row:", result);
+          } catch (err) {
+            console.error("✗ Failed to create evening row:", err);
+            alert(`Failed to create evening row: ${err.message}`);
+          }
+        } else {
+          // UPDATE existing row
+
+          try {
+            const result = await updatePrizeBreakdown(row);
+            console.log("✓ Updated evening row:", result);
+          } catch (err) {
+            console.error("✗ Failed to update evening row:", err);
+            alert(`Failed to update evening row: ${err.message}`);
+          }
+        }
+      }
+
+      alert("Post updated successfully!");
+
+      // 5. Refresh the data after successful update
+      console.log("Step 5: Refreshing data...");
+      const data = await getPrizeBreakDownByPost(id);
+      const midday = data.prizes.filter((p) => p.draw_type === "midday");
+      const evening = data.prizes.filter((p) => p.draw_type === "evening");
+
+      setMiddayBreakdown(midday);
+      setEveningBreakdown(evening);
+      setFormData((prev) => ({
+        ...prev,
+        middayBreakdown: midday,
+        eveningBreakdown: evening,
+      }));
+      setDeletedRows([]); // Clear deleted rows
+
+      console.log("✓ Data refreshed");
+
+      // Optional: Navigate after success
+      // navigate("/admin/posts");
     } catch (error) {
-      console.error('Error updating post:', error);
+      console.error("=== ERROR IN SUBMISSION ===", error);
+      alert(`Error updating post: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -103,21 +326,25 @@ const EditPost = memo(() => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Edit Post</h1>
-        <p className="text-gray-600 mt-1">Update post information and settings</p>
+        <p className="text-gray-600 mt-1">
+          Update post information and settings
+        </p>
       </div>
 
-      {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h2>
-          
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Basic Information
+          </h2>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Title */}
             <div className="md:col-span-2">
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="title"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Title *
               </label>
               <input
@@ -132,9 +359,11 @@ const EditPost = memo(() => {
               />
             </div>
 
-            {/* Category */}
             <div>
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="category"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Category *
               </label>
               <select
@@ -145,16 +374,20 @@ const EditPost = memo(() => {
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">Select category</option>
-                {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
+                <option value="">{formData.category}</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.slug}>
+                    {category.slug}
+                  </option>
                 ))}
               </select>
             </div>
 
-            {/* Status */}
             <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="status"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Status
               </label>
               <select
@@ -166,135 +399,154 @@ const EditPost = memo(() => {
               >
                 <option value="draft">Draft</option>
                 <option value="published">Published</option>
-                <option value="archived">Archived</option>
               </select>
             </div>
 
-            {/* Draw Date */}
             <div>
-              <label htmlFor="drawDate" className="block text-sm font-medium text-gray-700 mb-2">
-                Draw Date
+              <label
+                htmlFor="created_at"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Date
               </label>
               <input
                 type="date"
-                id="drawDate"
-                name="drawDate"
-                value={formData.drawDate}
+                id="created_at"
+                name="created_at"
+                value={formData.created_at}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            {/* Jackpot */}
-            <div>
-              <label htmlFor="jackpot" className="block text-sm font-medium text-gray-700 mb-2">
-                Jackpot Amount
-              </label>
-              <input
-                type="text"
-                id="jackpot"
-                name="jackpot"
-                value={formData.jackpot}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="e.g., $500,000,000"
               />
             </div>
           </div>
 
-          {/* Winning Numbers */}
           <div className="mt-6">
-            <label htmlFor="winningNumbers" className="block text-sm font-medium text-gray-700 mb-2">
-              Winning Numbers
+            <label
+              htmlFor="Midday_Winnings"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Midday Winning Numbers
             </label>
             <input
               type="text"
-              id="winningNumbers"
-              name="winningNumbers"
-              value={formData.winningNumbers}
+              id="Midday_Winnings"
+              name="Midday_Winnings"
+              value={formData.Midday_Winnings}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="e.g., 12, 25, 33, 41, 52, Powerball: 8"
             />
           </div>
 
-          {/* Description */}
           <div className="mt-6">
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="Evening_Winnings"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Evening Winning Numbers
+            </label>
+            <input
+              type="text"
+              id="Evening_Winnings"
+              name="Evening_Winnings"
+              value={formData.Evening_Winnings}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="mt-6">
+            <label
+              htmlFor="content"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Description
             </label>
             <textarea
-              id="description"
-              name="description"
-              value={formData.description}
+              id="content"
+              name="content"
+              value={formData.content}
               onChange={handleChange}
               rows={4}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter post description"
+              placeholder={formData.content}
+            />
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              Prize Breakdown
+            </h2>
+
+            <EditablePrizeTable
+              title="Midday"
+              data={formData.middayBreakdown || []}
+              onCreateRow={(newRow) => handleCreateRow(newRow, "midday")}
+              onUpdateRow={(index, updatedRow) =>
+                handleUpdateRow(index, updatedRow, "midday")
+              }
+              onDeleteRow={(index, id) => handleDeleteRow(index, id, "midday")}
+            />
+
+            <EditablePrizeTable
+              title="Evening"
+              data={formData.eveningBreakdown || []}
+              onCreateRow={(newRow) => handleCreateRow(newRow, "evening")}
+              onUpdateRow={(index, updatedRow) =>
+                handleUpdateRow(index, updatedRow, "evening")
+              }
+              onDeleteRow={(index, id) => handleDeleteRow(index, id, "evening")}
             />
           </div>
         </div>
 
-        {/* SEO Section */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">SEO Settings</h2>
-          
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            SEO Settings
+          </h2>
+
           <div className="space-y-6">
-            {/* Meta Title */}
             <div>
-              <label htmlFor="metaTitle" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="meta_title"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Meta Title
               </label>
               <input
                 type="text"
-                id="metaTitle"
-                name="metaTitle"
-                value={formData.metaTitle}
+                id="meta_title"
+                name="meta_title"
+                value={formData.meta_title}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="SEO title for search engines"
+                placeholder={formData.meta_title}
               />
             </div>
 
-            {/* Meta Description */}
             <div>
-              <label htmlFor="metaDescription" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="meta_desc"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Meta Description
               </label>
               <textarea
-                id="metaDescription"
-                name="metaDescription"
-                value={formData.metaDescription}
+                id="meta_desc"
+                name="meta_desc"
+                value={formData.meta_desc}
                 onChange={handleChange}
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="SEO description for search engines"
-              />
-            </div>
-
-            {/* Keywords */}
-            <div>
-              <label htmlFor="keywords" className="block text-sm font-medium text-gray-700 mb-2">
-                Keywords
-              </label>
-              <input
-                type="text"
-                id="keywords"
-                name="keywords"
-                value={formData.keywords}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Comma-separated keywords"
+                placeholder={formData.meta_desc}
               />
             </div>
           </div>
         </div>
 
-        {/* Actions */}
         <div className="flex items-center justify-end space-x-4">
           <button
             type="button"
-            onClick={() => navigate('/admin/posts')}
+            onClick={() => navigate("/admin/posts")}
             className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200"
           >
             Cancel
@@ -304,11 +556,11 @@ const EditPost = memo(() => {
             disabled={loading}
             className={`px-6 py-2 text-white rounded-lg transition-colors duration-200 ${
               loading
-                ? 'bg-blue-300 cursor-not-allowed'
-                : 'bg-blue-600 hover:bg-blue-700'
+                ? "bg-blue-300 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
             }`}
           >
-            {loading ? 'Updating...' : 'Update Post'}
+            {loading ? "Updating..." : "Update Post"}
           </button>
         </div>
       </form>
@@ -316,7 +568,6 @@ const EditPost = memo(() => {
   );
 });
 
-EditPost.displayName = 'EditPost';
+EditPost.displayName = "EditPost";
 
 export default EditPost;
-

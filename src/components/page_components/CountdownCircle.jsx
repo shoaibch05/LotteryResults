@@ -1,10 +1,9 @@
 import React, { useEffect, useState, memo } from "react";
-import dayjs from "dayjs";
 
 const Circle = ({ value, total, size = 60, strokeWidth = 6, label }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const progress = (value / total) * circumference;
+  const progress = total ? (value / total) * circumference : 0;
 
   return (
     <div className="flex flex-col items-center">
@@ -31,7 +30,8 @@ const Circle = ({ value, total, size = 60, strokeWidth = 6, label }) => {
             strokeDashoffset={circumference - progress}
           />
         </svg>
-        {/* Centered number inside circle */}
+
+        {/* Center number */}
         <span className="absolute inset-0 flex items-center justify-center text-lg font-bold text-white">
           {String(value).padStart(2, "0")}
         </span>
@@ -41,49 +41,42 @@ const Circle = ({ value, total, size = 60, strokeWidth = 6, label }) => {
   );
 };
 
-
-const CountdownCircles = ({ targetTime }) => {
-  const [timeLeft, setTimeLeft] = useState({
+const CountdownCircle = ({ timeLeft }) => {
+  const [parsedTime, setParsedTime] = useState({
     hours: 0,
     minutes: 0,
     seconds: 0,
   });
 
   useEffect(() => {
-    const update = () => {
-      const now = dayjs();
-      const diff = dayjs(targetTime).diff(now, "second");
+    if (typeof timeLeft === "string") {
+      // Match from "02d 03h 15m 20s"
+      const match = timeLeft.match(/(\d{2})d\s+(\d{2})h\s+(\d{2})m\s+(\d{2})s/);
 
-      if (diff <= 0) {
-        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
-        return;
+      if (match) {
+        const [, days, hours, minutes, seconds] = match.map(Number);
+
+        // ✅ Convert total hours = (days * 24) + hours
+        const totalHours = days * 24 + hours;
+
+        setParsedTime({
+          hours: totalHours,
+          minutes,
+          seconds,
+        });
+      } else {
+        setParsedTime({ hours: 0, minutes: 0, seconds: 0 });
       }
-
-      const hours = Math.floor(diff / 3600);
-      const minutes = Math.floor((diff % 3600) / 60);
-      const seconds = diff % 60;
-
-      setTimeLeft({ hours, minutes, seconds });
-    };
-
-    update();
-    const interval = setInterval(update, 1000);
-    return () => clearInterval(interval);
-  }, [targetTime]);
+    }
+  }, [timeLeft]);
 
   return (
-    <div className="flex gap-4  items-center relative">
-      <div className="relative flex align-middle">
-        <Circle value={timeLeft.hours} total={24} label="Hours" />
-      </div>
-      <div className="relative">
-        <Circle value={timeLeft.minutes} total={60} label="Minutes" />
-      </div>
-      <div className="relative">
-        <Circle value={timeLeft.seconds} total={60} label="Seconds" />
-      </div>
+    <div className="flex gap-4 items-center relative">
+      <Circle value={parsedTime.hours} total={72} label="Hours" />
+      <Circle value={parsedTime.minutes} total={60} label="Minutes" />
+      <Circle value={parsedTime.seconds} total={60} label="Seconds" />
     </div>
   );
 };
 
-export default memo(CountdownCircles);
+export default memo(CountdownCircle);

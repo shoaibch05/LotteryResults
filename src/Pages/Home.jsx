@@ -1,5 +1,5 @@
 // src/Pages/Home.jsx
-import React, { Suspense, useMemo } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 
 const GameCard = React.lazy(() => import("../components/GameCard"));
 
@@ -7,7 +7,11 @@ import PowerballLogo from "../assets/powerball-logo-white.svg";
 import MegaMillions from "../assets/mega-millions-logo-white.svg";
 import LatestPosts from "../components/page_components/RecentsPosts";
 import { useAds } from "../context/AdProvider";
+
 import AdBanner from "../components/AdBanner";
+import { getPostBycategory } from "../api/postApi";
+import { getLatestJackpotByCategory } from "../api/jackpotApi";
+import { formatDate, parseNumbers } from "../utils/utilityfun";
 
 // Preload critical images
 const preloadImages = () => {
@@ -22,55 +26,97 @@ const preloadImages = () => {
   }
 };
 
-// Preload on component module load
 preloadImages();
+
+// Helper function to parse lottery numbers
+// Checks if last item is a key-value pair (contains ":"), if so treats it as bonus
 
 const Home = () => {
   const { getAdsFor } = useAds();
   const adsUnderHeader = getAdsFor("homepage", "underHeader");
   const adsUnderGameCards = getAdsFor("homepage", "underGameCards");
   const adsBottom = getAdsFor("homepage", "bottom");
-  // Memoize draws data to prevent unnecessary re-renders
-  const draws = useMemo(
-    () => [
-      {
-        id: 1,
-        headerTitle: "Mega Millions Results",
-        headerLogo: MegaMillions,
-        headerbgColor: "bg-blue-500",
-        date: "September 24th 2025",
-        midday: [1, 6, 27],
-        evening: [47, 53, 56],
-        MidBonusBall: 37,
-        EveBonusBall: 56,
-        jackpot: "$4.3 Million",
-        nextDrawDate: "2025-09-28T19:00:00",
-        payoutLink: "#",
-        primaryBtnText: "More New York Lotto Results",
-      },
-      {
-        id: 2,
-        headerTitle: "PowerBall Results",
-        headerLogo: PowerballLogo,
-        headerbgColor: "bg-red-600",
-        date: "October 2nd 2025",
-        midday: [5, 12, 19],
-        evening: [19, 34, 45],
-        MidBonusBall: 19,
-        EveBonusBall: 45,
-        jackpot: "$500 Million",
-        nextDrawDate: "2025-10-05T22:00:00",
-        payoutLink: "#",
-        primaryBtnText: "View PowerBall Results",
-      },
-    ],
-    []
-  );
+
+  const [megaData, setMegaData] = useState(null);
+  const [powerData, setPowerData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        // Fetch MegaMillions data
+        const [megaPost, megaJackpot] = await Promise.all([
+          getPostBycategory("megamillions"),
+          getLatestJackpotByCategory("megamillions"),
+        ]);
+
+        if (megaPost && megaPost[0]) {
+          const post = megaPost[0];
+          const midday = parseNumbers(post.Midday_Winnings);
+          const evening = parseNumbers(post.Evening_Winnings);
+
+          setMegaData({
+            id: 1,
+            headerTitle: "Mega Millions Results",
+            headerLogo: MegaMillions,
+            headerbgColor: "bg-blue-500",
+            date: formatDate(post.created_at),
+            midday: midday.numbers,
+            evening: evening.numbers,
+            MidBonusBall: midday.bonusNumber,
+            EveBonusBall: evening.bonusNumber,
+            jackpot: megaJackpot[0].amount || "N/A",
+            nextDrawDate: megaJackpot[0].draw_date || null,
+            payoutLink: `/results/${post.id}`,
+            primaryBtnText: "More Mega Millions Results",
+          });
+        }
+
+        // Fetch Powerball data
+        const [powerPost, powerJackpot] = await Promise.all([
+          getPostBycategory("powerball"),
+          getLatestJackpotByCategory("powerball"),
+        ]);
+
+        if (powerPost && powerPost[0]) {
+          const post = powerPost[0];
+          const midday = parseNumbers(post.Midday_Winnings);
+          const evening = parseNumbers(post.Evening_Winnings);
+
+          setPowerData({
+            id: 2,
+            headerTitle: "PowerBall Results",
+            headerLogo: PowerballLogo,
+            headerbgColor: "bg-red-600",
+            date: formatDate(post.created_at),
+            midday: midday.numbers,
+            evening: evening.numbers,
+            MidBonusBall: midday.bonusNumber,
+            EveBonusBall: evening.bonusNumber,
+            jackpot: powerJackpot[0].amount || "N/A",
+            nextDrawDate: powerJackpot[0].draw_date || null,
+            payoutLink: `/results/${post.id}`,
+            primaryBtnText: "View PowerBall Results",
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching lottery data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []); // Empty dependency array - runs once on mount
+
+  const draws = [megaData, powerData].filter(Boolean);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Intro text - Added content-visibility for performance */}
-      <div className="bg-white shadow-md p-6 rounded-lg mb-8 cv-auto">
+      {/* Intro text */}
+      <div className="bg-white shadow-md p-6 rounded-lg mb-8">
         <h1 className="text-2xl font-bold mb-2">New York Lottery Results</h1>
         <p className="text-gray-700">
           These are the latest New York Lottery Results from the biggest and
@@ -95,14 +141,15 @@ const Home = () => {
         <AdBanner key={a.slot} slot={a.slot} height={120} />
       ))}
 
-      {/* Cards with optimized suspense fallback */}
+      {/* Cards */}
       <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <Suspense
-          fallback={
-            <div className="space-y-6">
-              {draws.map((draw) => (
+        {loading ? (
+          // Loading skeleton
+          <div className="space-y-6 md:col-span-2">
+            <div className="grid md:grid-cols-2 gap-6">
+              {[1, 2].map((i) => (
                 <div
-                  key={draw.id}
+                  key={i}
                   className="bg-white shadow-md rounded-md overflow-hidden border border-gray-200 min-h-[400px] animate-pulse"
                 >
                   <div className="bg-gray-300 h-12"></div>
@@ -115,17 +162,26 @@ const Home = () => {
                 </div>
               ))}
             </div>
-          }
-        >
-          {draws.map((draw) => (
-            <GameCard key={draw.id} {...draw} />
-          ))}
-        </Suspense>
+          </div>
+        ) : draws.length > 0 ? (
+          <Suspense fallback={<div>Loading cards...</div>}>
+            {draws.map((draw) => (
+              <GameCard key={draw.id} {...draw} />
+            ))}
+          </Suspense>
+        ) : (
+          <div className="md:col-span-2 text-center py-8 text-gray-500">
+            No lottery results available at this time.
+          </div>
+        )}
       </div>
+
       {adsUnderGameCards.map((a) => (
         <AdBanner key={a.slot} slot={a.slot} height={120} />
       ))}
+
       <LatestPosts />
+
       {adsBottom.map((a) => (
         <AdBanner key={a.slot} slot={a.slot} height={120} />
       ))}

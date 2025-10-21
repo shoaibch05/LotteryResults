@@ -8,7 +8,6 @@ const LOCAL_KEY = "app_add";
 
 export const AdProvider = ({ children }) => {
   const [ads, setAds] = useState({});
-  console.log(ads);
 
   // load from localStorage or default
   useEffect(() => {

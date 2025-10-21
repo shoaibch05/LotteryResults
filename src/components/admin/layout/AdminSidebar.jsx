@@ -6,6 +6,7 @@ const AdminSidebar = memo(() => {
   const location = useLocation();
   const {
     canManageUsers,
+    canManageCategoriesinfo,
     canManagePosts,
     canManageSEO,
     canManageSiteSettings,
@@ -18,14 +19,26 @@ const AdminSidebar = memo(() => {
     {
       name: "Dashboard",
       path: "/admin/dashboard",
-      icon: "📊",
+      icon: "📈",
       permission: "view_analytics",
+    },
+    {
+      name: "Categores Info Pages",
+      path: "/admin/categoriesinfo",
+      icon: "📊",
+      permission: "canManageCategoriesinfo",
     },
     {
       name: "Posts",
       path: "/admin/posts",
       icon: "📝",
       permission: "manage_posts",
+    },
+    {
+      name: "JackPots",
+      path: "/admin/JackPots",
+      icon: "🚀",
+      permission: "manage_jackpots",
     },
     {
       name: "Users",
@@ -36,7 +49,7 @@ const AdminSidebar = memo(() => {
     {
       name: "Ad Placement",
       path: "/admin/adplacememt",
-      icon: "👥",
+      icon: "🔥",
       permission: "manage_ad_placement",
     },
     {
@@ -61,6 +74,8 @@ const AdminSidebar = memo(() => {
         return canManagePosts;
       case "manage_users":
         return canManageUsers;
+      case "canMageCategoriesinfo":
+        return canManageCategoriesinfo;
       case "manage_ad_placement":
         return canManageAdPlacement;
       case "manage_seo":

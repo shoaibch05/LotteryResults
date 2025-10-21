@@ -9,9 +9,11 @@ const ROLE_PERMISSIONS = {
     level: 4,
     permissions: [
       "manage_users",
+      "manage_jackpot",
       "manage_posts",
       "manage_seo",
       "manage_site_settings",
+      "canManageCategoriesinfo",
       "manage_admins",
       "view_analytics",
       "manage_ad_placement",
@@ -21,6 +23,8 @@ const ROLE_PERMISSIONS = {
     level: 3,
     permissions: [
       "manage_users",
+      "manage_jackpot",
+      "canManageCategoriesinfo",
       "manage_posts",
       "manage_seo",
       "manage_site_settings",
@@ -32,7 +36,9 @@ const ROLE_PERMISSIONS = {
     level: 2,
     permissions: [
       "manage_posts",
+      "manage_jackpot",
       "manage_seo",
+      "canManageCategoriesinfo",
       "manage_ad_placement",
       "view_analytics",
     ],
@@ -83,10 +89,12 @@ export const RoleProvider = ({ children }) => {
       roleInfo.role === "admin" ||
       roleInfo.role === "superadmin",
     canManageUsers: roleInfo.hasPermission("manage_users"),
+    canManageJackpots: roleInfo.hasPermission("manage_jackpot"),
     canManagePosts: roleInfo.hasPermission("manage_posts"),
     canManageSEO: roleInfo.hasPermission("manage_seo"),
     canManageSiteSettings: roleInfo.hasPermission("manage_site_settings"),
     canViewAnalytics: roleInfo.hasPermission("view_analytics"),
+    canManageCategoriesinfo: roleInfo.hasPermission("canManageCategoriesinfo"),
     canManageAdPlacement: roleInfo.hasPermission("manage_ad_placement"),
     canManageAdmins: roleInfo.hasPermission("manage_admins"),
   };

@@ -1,37 +1,42 @@
-import { createContext, useContext, useReducer, useEffect } from 'react';
+import { createContext, useContext, useReducer, useEffect } from "react";
 
 const AuthContext = createContext();
 
 // Auth reducer for state management
 const authReducer = (state, action) => {
   switch (action.type) {
-    case 'LOGIN_START':
+    case "LOGIN_START":
       return { ...state, loading: true, error: null };
-    case 'LOGIN_SUCCESS':
+    case "LOGIN_SUCCESS":
       return {
         ...state,
         loading: false,
         isAuthenticated: true,
         user: action.payload,
-        error: null
+        error: null,
       };
-    case 'LOGIN_FAILURE':
+    case "LOGIN_FAILURE":
       return {
         ...state,
         loading: false,
         isAuthenticated: false,
         user: null,
-        error: action.payload
+        error: action.payload,
       };
-    case 'LOGOUT':
+    case "LOGOUT":
       return {
         ...state,
         isAuthenticated: false,
         user: null,
-        error: null
+        error: null,
       };
-    case 'CLEAR_ERROR':
+    case "CLEAR_ERROR":
       return { ...state, error: null };
+    case "UPDATE_USER":
+      return {
+        ...state,
+        user: { ...state.user, ...action.payload },
+      };
     default:
       return state;
   }
@@ -41,7 +46,7 @@ const initialState = {
   isAuthenticated: false,
   user: null,
   loading: false,
-  error: null
+  error: null,
 };
 
 export const AuthProvider = ({ children }) => {
@@ -49,99 +54,92 @@ export const AuthProvider = ({ children }) => {
 
   // Check for existing auth on mount
   useEffect(() => {
-    const token = localStorage.getItem('admin_token');
-    const userData = localStorage.getItem('admin_user');
-    
-    if (token && userData) {
+    const userData = localStorage.getItem("userData");
+    const userRole = localStorage.getItem("userRole");
+
+    if (userData && userRole) {
       try {
         const user = JSON.parse(userData);
-        dispatch({ type: 'LOGIN_SUCCESS', payload: user });
+        dispatch({ type: "LOGIN_SUCCESS", payload: user });
       } catch (error) {
         // Clear invalid data
-        localStorage.removeItem('admin_token');
-        localStorage.removeItem('admin_user');
+        localStorage.removeItem("userData");
+        localStorage.removeItem("userRole");
       }
     }
   }, []);
 
   const login = async (credentials) => {
-    dispatch({ type: 'LOGIN_START' });
-    
+    dispatch({ type: "LOGIN_START" });
+
     try {
-      // Mock API call - replace with actual backend
-      const response = await fetch('/api/admin/auth/login', {
-        method: 'POST',
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+      const response = await fetch(`${API_BASE_URL}/user/login`, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(credentials),
+        body: JSON.stringify({
+          email: credentials.email, // Changed from username to email
+          password: credentials.password,
+        }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Invalid credentials');
+        throw new Error(data.message || "Login failed");
       }
 
-      const data = await response.json();
-      
       // Store auth data
-      localStorage.setItem('admin_token', data.token);
-      localStorage.setItem('admin_user', JSON.stringify(data.user));
-      
-      dispatch({ type: 'LOGIN_SUCCESS', payload: data.user });
+      localStorage.setItem("userData", JSON.stringify(data.user));
+      localStorage.setItem("userRole", data.user.role);
+
+      dispatch({ type: "LOGIN_SUCCESS", payload: data.user });
       return data;
     } catch (error) {
-      // Fallback to mock authentication for development
-      const mockUsers = {
-        'superadmin': { role: 'superadmin', username: 'superadmin', id: 1 },
-        'admin': { role: 'admin', username: 'admin', id: 2 },
-        'editor': { role: 'editor', username: 'editor', id: 3 }
-      };
-
-      if (credentials.username in mockUsers && credentials.password === '1234') {
-        const user = mockUsers[credentials.username];
-        const mockToken = `mock_token_${Date.now()}`;
-        
-        localStorage.setItem('admin_token', mockToken);
-        localStorage.setItem('admin_user', JSON.stringify(user));
-        
-        dispatch({ type: 'LOGIN_SUCCESS', payload: user });
-        return { user, token: mockToken };
-      }
-      
-      dispatch({ type: 'LOGIN_FAILURE', payload: error.message });
+      dispatch({ type: "LOGIN_FAILURE", payload: error.message });
       throw error;
     }
   };
 
   const logout = () => {
-    localStorage.removeItem('admin_token');
-    localStorage.removeItem('admin_user');
-    dispatch({ type: 'LOGOUT' });
+    localStorage.removeItem("userData");
+    localStorage.removeItem("userRole");
+    dispatch({ type: "LOGOUT" });
   };
 
   const clearError = () => {
-    dispatch({ type: 'CLEAR_ERROR' });
+    dispatch({ type: "CLEAR_ERROR" });
+  };
+
+  const updateUser = (updatedUserData) => {
+    // Update both context and localStorage
+    const currentUserData = JSON.parse(
+      localStorage.getItem("userData") || "{}"
+    );
+    const newUserData = { ...currentUserData, ...updatedUserData };
+
+    localStorage.setItem("userData", JSON.stringify(newUserData));
+    dispatch({ type: "UPDATE_USER", payload: updatedUserData });
   };
 
   const value = {
     ...state,
     login,
     logout,
-    clearError
+    clearError,
+    updateUser,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
-
