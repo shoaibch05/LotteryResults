@@ -8,7 +8,13 @@ import {
   deletePost,
   updatePost,
   getLatestpostbycategory,
+  getAllLatestpostsbycategory,
+  getAllMiddayLatestresultssbycategory,
+  getAllEveningLatestresultssbycategory,
 } from "../models/postModel.js";
+import { getAllSubscribers } from "../models/subscriberModel.js";
+import { sendPostNotificationEmails } from "../utils/emailService.js";
+import { addPostToSitemap } from "../utils/sitemapService.js";
 
 export const getPosts = async (req, res) => {
   try {
@@ -22,6 +28,15 @@ export const getlatPostbyCat = async (req, res) => {
   const { category } = req.params;
   try {
     const posts = await getLatestpostbycategory(category);
+    res.json(posts);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+export const getAlllatPostsbyCat = async (req, res) => {
+  const { category } = req.params;
+  try {
+    const posts = await getAllLatestpostsbycategory(category);
     res.json(posts);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -85,6 +100,28 @@ export const getSinglePost = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+export const getallmiddaybycat = async (req, res) => {
+  try {
+    const post = await getAllMiddayLatestresultssbycategory(
+      req.params.category
+    );
+    if (!post) return res.status(404).json({ message: "Post not found" });
+    res.json(post);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+export const getalleveningbycat = async (req, res) => {
+  try {
+    const post = await getAllEveningLatestresultssbycategory(
+      req.params.category
+    );
+    if (!post) return res.status(404).json({ message: "Post not found" });
+    res.json(post);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
 export const addPost = async (req, res) => {
   const {
@@ -98,7 +135,14 @@ export const addPost = async (req, res) => {
     metaTitle,
     metaDescription,
   } = req.body;
+
   try {
+    console.log("\n═══════════════════════════════════");
+    console.log("🚀 CREATING NEW POST");
+    console.log("═══════════════════════════════════\n");
+
+    // ✅ Step 1: Create post in database (MUST succeed)
+    console.log("📝 Step 1: Creating post in database...");
     const newPost = await createPost(
       title,
       category,
@@ -110,8 +154,72 @@ export const addPost = async (req, res) => {
       metaTitle,
       metaDescription
     );
-    res.status(201).json(newPost);
+
+    const postId = newPost.id;
+    console.log(`✓ Post created successfully! ID: ${postId}\n`);
+
+    // ✅ Step 2: Generate post URL
+    const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+    const formattedDate = new Date(date).toISOString().split("T")[0];
+    const categorySlug = category.toLowerCase().replace(/\s+/g, "-");
+    const postUrl = `${baseUrl}/${categorySlug}/results/${formattedDate}`;
+
+    console.log(`🔗 Post URL: ${postUrl}\n`);
+
+    // ✅ Step 3: Fire independent background tasks (DON'T AWAIT)
+    // This allows both to run in parallel without blocking the response
+
+    // 📧 Task 1: Send emails (independent)
+    getAllSubscribers()
+      .then((subscribers) => {
+        if (!subscribers || subscribers.length === 0) {
+          console.log("⚠ No subscribers found, skipping email notifications\n");
+          return;
+        }
+
+        const postData = {
+          title,
+          category,
+          date,
+          description,
+        };
+
+        // Fire and forget - don't await
+        sendPostNotificationEmails(postData, subscribers, postUrl).catch(
+          (error) => {
+            console.error("📧 Email notification error:", error.message);
+          }
+        );
+      })
+      .catch((error) => {
+        console.error("📧 Failed to fetch subscribers:", error.message);
+      });
+
+    // 🗺️ Task 2: Update sitemap (independent)
+    addPostToSitemap({
+      title,
+      category,
+      date,
+      id: postId,
+    }).catch((error) => {
+      console.error("🗺️  Sitemap update error:", error.message);
+    });
+
+    // ✅ Step 4: Return immediate success response
+    console.log("═══════════════════════════════════");
+    console.log("✓ POST CREATED SUCCESSFULLY");
+    console.log("  Background tasks running...");
+    console.log("═══════════════════════════════════\n");
+
+    res.status(201).json({
+      success: true,
+      message:
+        "Post created successfully! Email notifications and sitemap update in progress.",
+      postId: postId,
+      postUrl: postUrl,
+    });
   } catch (err) {
+    console.error("\n✗ ERROR CREATING POST:", err.message);
     res.status(500).json({ error: err.message });
   }
 };

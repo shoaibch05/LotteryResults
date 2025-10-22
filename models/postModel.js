@@ -23,6 +23,56 @@ export const getLatestpostbycategory = (category) => {
     );
   });
 };
+export const getAllLatestpostsbycategory = (category) => {
+  return new Promise((resolve, reject) => {
+    db.query(
+      "SELECT * FROM `posts` WHERE category = ? ORDER BY created_at DESC;",
+      [category],
+      (err, results) => {
+        if (err) reject(err);
+        else resolve(results);
+      }
+    );
+  });
+};
+export const getAllMiddayLatestresultssbycategory = (category) => {
+  return new Promise((resolve, reject) => {
+    db.query(
+      "SELECT id, title, Midday_Winnings, created_at FROM `posts` WHERE category = ? ORDER BY created_at DESC;",
+      [category],
+
+      (err, results) => {
+        if (err) reject(err);
+        else {
+          const Post = results[0];
+          resolve({
+            ...Post,
+            Midday_Winnings: parseValue(Post.Midday_Winnings),
+          });
+        }
+      }
+    );
+  });
+};
+export const getAllEveningLatestresultssbycategory = (category) => {
+  return new Promise((resolve, reject) => {
+    db.query(
+      "SELECT id, title, Evening_Winnings, created_at FROM `posts` WHERE category = ? ORDER BY created_at DESC;",
+      [category],
+
+      (err, results) => {
+        if (err) reject(err);
+        else {
+          const Post = results[0];
+          resolve({
+            ...Post,
+            Evening_Winnings: parseValue(Post.Evening_Winnings),
+          });
+        }
+      }
+    );
+  });
+};
 
 export const updatePost = (id, postData) => {
   const {

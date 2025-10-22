@@ -38,8 +38,10 @@ export const getSubscriberByEmail = (email) => {
 
 // Optional: fetch all subscribers (for admin)
 export const getAllSubscribers = async () => {
-  const [rows] = await db.execute(
-    "SELECT * FROM subscribers ORDER BY subscribed_at DESC"
-  );
-  return rows;
+  return new Promise((resolve, reject) => {
+    db.query("SELECT email FROM subscribers", (err, results) => {
+      if (err) return reject(err);
+      resolve(results);
+    });
+  });
 };

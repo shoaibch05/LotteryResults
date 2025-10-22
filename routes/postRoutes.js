@@ -9,6 +9,9 @@ import {
   removePost,
   updatePostbyid,
   getlatPostbyCat,
+  getAlllatPostsbyCat,
+  getallmiddaybycat,
+  getalleveningbycat,
 } from "../controllers/postController.js";
 
 const router = express.Router();
@@ -17,8 +20,11 @@ router.get("/", getPosts);
 router.get("/n", getPostsNumber);
 router.get("/category", getCategories);
 router.get("/category/n", getCategoriesNum);
+router.get("/id/:id", getSinglePost);
+router.get("/all/:category", getAlllatPostsbyCat);
+router.get("/midday/:category", getallmiddaybycat);
+router.get("/evening/:category", getalleveningbycat);
 router.get("/:category", getlatPostbyCat);
-router.get("/:id", getSinglePost);
 router.put("/:id", updatePostbyid);
 router.post("/", addPost);
 router.delete("/:id", removePost);
