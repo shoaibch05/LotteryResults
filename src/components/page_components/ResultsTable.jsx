@@ -3,10 +3,11 @@ import { Link } from "react-router-dom";
 import dayjs from "dayjs";
 
 const ResultsTable = ({ results, hasBonus = false }) => {
-  // check globally if any row has midday / evening
-  const showMidday = results.some((row) => row.midday && row.midday.length > 0);
+  const showMidday = results.some(
+    (row) => row.midday && row.midday.numbers?.length > 0
+  );
   const showEvening = results.some(
-    (row) => row.evening && row.evening.length > 0
+    (row) => row.evening && row.evening.numbers?.length > 0
   );
 
   return (
@@ -21,66 +22,76 @@ const ResultsTable = ({ results, hasBonus = false }) => {
         </thead>
 
         <tbody>
-          {results.map((row, idx) => (
-            <tr key={idx} className="border-b text-center">
-              {/* Draw Date */}
-              <td className="py-3 px-4 font-medium text-blue-600 text-center">
-                <Link to={`${dayjs(row.date).format("YYYY-MM-DD")}`}>
-                  {dayjs(row.date).format("MMMM DD, YYYY")}
-                </Link>
+          {results.length === 0 ? (
+            <tr>
+              <td colSpan={3} className="py-6 text-center text-gray-500 italic">
+                No results found for the selected date range.
               </td>
-
-              {/* Midday Numbers */}
-              {showMidday && (
-                <td className="py-3 px-4">
-                  {row.midday && row.midday.length > 0 ? (
-                    <div className="flex space-x-2 justify-center">
-                      {row.midday.map((num, i) => (
-                        <span
-                          key={i}
-                          className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300"
-                        >
-                          {num}
-                        </span>
-                      ))}
-                      {hasBonus && row.middayBonus && (
-                        <span className="w-8 h-8 flex items-center justify-center rounded-full bg-red-500 text-white font-bold">
-                          {row.middayBonus}
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    "-"
-                  )}
-                </td>
-              )}
-
-              {/* Evening Numbers */}
-              {showEvening && (
-                <td className="py-3 px-4">
-                  {row.evening && row.evening.length > 0 ? (
-                    <div className="flex space-x-2 justify-center">
-                      {row.evening.map((num, i) => (
-                        <span
-                          key={i}
-                          className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300"
-                        >
-                          {num}
-                        </span>
-                      ))}
-                      {hasBonus && row.eveningBonus && (
-                        <span className="w-8 h-8 flex items-center justify-center rounded-full bg-red-500 text-white font-bold">
-                          {row.eveningBonus}
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    "-"
-                  )}
-                </td>
-              )}
             </tr>
-          ))}
+          ) : (
+            results.map((row, idx) => (
+              <tr key={idx} className="border-b text-center">
+                {/* Date */}
+                <td className="py-3 px-4 font-medium text-blue-600 text-center">
+                  <Link
+                    to={`${row.id}/${dayjs(row.date).format("YYYY-MM-DD")}`}
+                  >
+                    {row.date}
+                  </Link>
+                </td>
+
+                {/* Midday */}
+                {showMidday && (
+                  <td className="py-3 px-4 max-w-[150px] break-words  ">
+                    {row.midday?.numbers?.length > 0 ? (
+                      <div className="flex flex-wrap space-x-2 space-y-2 justify-center">
+                        {row.midday.numbers.map((num, i) => (
+                          <span
+                            key={i}
+                            className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300"
+                          >
+                            {num}
+                          </span>
+                        ))}
+                        {hasBonus && row.midday.bonusNumber && (
+                          <span className="w-8 h-8 flex items-center justify-center rounded-full bg-red-500 text-white font-bold">
+                            {row.midday.bonusNumber}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      "-"
+                    )}
+                  </td>
+                )}
+
+                {/* Evening */}
+                {showEvening && (
+                  <td className="py-3 px-4 max-w-[150px] break-words">
+                    {row.evening?.numbers?.length > 0 ? (
+                      <div className="flex flex-wrap space-y-2 space-x-2 justify-center">
+                        {row.evening.numbers.map((num, i) => (
+                          <span
+                            key={i}
+                            className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300"
+                          >
+                            {num}
+                          </span>
+                        ))}
+                        {hasBonus && row.evening.bonusNumber && (
+                          <span className="w-8 h-8 flex items-center justify-center rounded-full bg-red-500 text-white font-bold">
+                            {row.evening.bonusNumber}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      "-"
+                    )}
+                  </td>
+                )}
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>

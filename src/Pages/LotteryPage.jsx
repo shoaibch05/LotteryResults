@@ -2,6 +2,7 @@
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getLotteryBySlug } from "../api/lotteryApi";
+import SEO from "../components/SEO";
 // import { T } from "vitest/dist/chunks/reporters.d.BFLkQcL6.js";
 
 const LotteryHero = lazy(() =>
@@ -97,45 +98,66 @@ const LotteryPage = () => {
       </div>
     );
   }
+  const canonicalUrl = `${window.location.origin}/${slug}`;
+
+  // Prepare SEO data
+  const seoTitle = `${lottery.NAME} - Latest Results, How to Play & Prize Info`;
+  const seoDescription =
+    lottery.description ||
+    `Everything you need to know about ${lottery.NAME}. Check latest results, learn how to play, view prize breakdowns, and see top winners. Updated daily with official lottery information.`;
+  const seoKeywords = `${lottery.NAME}, lottery, how to play, winning numbers, results, prize breakdown, lottery winners, ${lottery.NAME} results`;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <Suspense
-        fallback={<div className="h-28 bg-white rounded mb-8 animate-pulse" />}
-      >
-        <LotteryHero title={lottery.NAME} description={lottery.description} />
-      </Suspense>
+    <>
+      <SEO
+        title={seoTitle}
+        description={seoDescription}
+        type="website"
+        canonical={canonicalUrl}
+        keywords={seoKeywords}
+        author="Lottery Results Hub"
+      />
 
-      <LazySection heightClass="h-64">
+      <div className="max-w-6xl mx-auto px-4 py-8">
         <Suspense
           fallback={
-            <div className="h-64 bg-gray-100 rounded mb-8 animate-pulse" />
+            <div className="h-28 bg-white rounded mb-8 animate-pulse" />
           }
         >
-          <LotteryHistory history={lottery.History} />
+          <LotteryHero title={lottery.NAME} description={lottery.description} />
         </Suspense>
-      </LazySection>
 
-      <LazySection heightClass="h-56">
-        <Suspense
-          fallback={
-            <div className="h-56 bg-gray-100 rounded mb-8 animate-pulse" />
-          }
-        >
-          <HowToPlay steps={lottery.How_To_Play} />
-        </Suspense>
-      </LazySection>
+        <LazySection heightClass="h-64">
+          <Suspense
+            fallback={
+              <div className="h-64 bg-gray-100 rounded mb-8 animate-pulse" />
+            }
+          >
+            <LotteryHistory history={lottery.History} />
+          </Suspense>
+        </LazySection>
 
-      <LazySection heightClass="h-56">
-        <Suspense
-          fallback={
-            <div className="h-56 bg-gray-100 rounded mb-8 animate-pulse" />
-          }
-        >
-          <TopWinners winners={lottery.Winners} />
-        </Suspense>
-      </LazySection>
-    </div>
+        <LazySection heightClass="h-56">
+          <Suspense
+            fallback={
+              <div className="h-56 bg-gray-100 rounded mb-8 animate-pulse" />
+            }
+          >
+            <HowToPlay steps={lottery.How_To_Play} />
+          </Suspense>
+        </LazySection>
+
+        <LazySection heightClass="h-56">
+          <Suspense
+            fallback={
+              <div className="h-56 bg-gray-100 rounded mb-8 animate-pulse" />
+            }
+          >
+            <TopWinners winners={lottery.Winners} />
+          </Suspense>
+        </LazySection>
+      </div>
+    </>
   );
 };
 

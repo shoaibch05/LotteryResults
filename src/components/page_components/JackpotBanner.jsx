@@ -17,7 +17,6 @@ const JackpotBanner = () => {
         // ✅ Extract date once data arrives
         if (data && data.length > 0) {
           setDrawDate(data[0].draw_date);
-          console.log("draw date is ", data[0].draw_date);
         }
       } catch (error) {
         console.error("Error while fetching jackpot data:", error);
@@ -28,12 +27,6 @@ const JackpotBanner = () => {
 
   // ✅ useCountdown runs only when drawDate exists
   const timeLeft = useCountdown(drawDate);
-
-  useEffect(() => {
-    if (jackpotData) {
-      console.log("Data received by API call:", jackpotData);
-    }
-  }, [jackpotData]);
 
   if (!jackpotData || jackpotData.length === 0) {
     return (

@@ -4,6 +4,8 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { TimerProvider } from "../context/TimerContext";
 import SubscriptionForm from "../components/SubscriptionForm";
+import LotteryChecker from "../components/page_components/checker/LotteryChecker";
+import Sitemap from "../Pages/StaticPages/Sitemap";
 
 // Lazy load public pages with better chunk names
 const Home = lazy(() => import(/* webpackChunkName: "home" */ "../Pages/Home"));
@@ -62,15 +64,19 @@ const PublicRoutes = memo(() => {
               <Route path="/:slug" element={<LotteryPage />} />
               <Route path="/:slug/info" element={<LotteryPage />} />
               <Route path="/:slug/results" element={<ResultsOverview />} />
-              <Route path="/:slug/results/:date" element={<ResultDetail />} />
+              <Route
+                path="/:slug/results/:id/:date"
+                element={<ResultDetail />}
+              />
               <Route path="/:slug/midday" element={<MiddayResults />} />
               <Route path="/:slug/evening" element={<EveningResults />} />
-              <Route path="/:slug/HotNumbers" element={<HotNumbersPage />} />
+              <Route path="/:slug/HotNumbers" element={<LotteryChecker />} />
               <Route
                 path="/:slug/HotNumbers/checkNumbers"
                 element={<HotNumberResult />}
               />
               <Route path="/faqs" element={<UniversalFAQ />} />
+              <Route path="/sitemap" element={<Sitemap />} />
             </Routes>
           </Suspense>
         </main>

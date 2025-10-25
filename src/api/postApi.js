@@ -10,7 +10,7 @@ export const createPost = async (data) => {
   return res.json();
 };
 export const getPostById = async (id) => {
-  const response = await fetch(`${API_BASE_URL}/posts/${id}`);
+  const response = await fetch(`${API_BASE_URL}/posts/id/${id}`);
 
   if (!response.ok) throw new Error("Failed to fetch post");
 
@@ -18,6 +18,24 @@ export const getPostById = async (id) => {
 };
 export const getPostBycategory = async (category) => {
   const res = await fetch(`${API_BASE_URL}/posts/${category}`);
+  if (!res.ok) throw new Error("Failed to fetch post");
+
+  return res.json();
+};
+export const getAllPostsBycategory = async (category) => {
+  const res = await fetch(`${API_BASE_URL}/posts/all/${category}`);
+  if (!res.ok) throw new Error("Failed to fetch post");
+
+  return res.json();
+};
+export const getAllMiddayresultsBycategory = async (category) => {
+  const res = await fetch(`${API_BASE_URL}/posts/midday/lotto`);
+  if (!res.ok) throw new Error("Failed to fetch post");
+
+  return res.json();
+};
+export const getAllEveningresultsBycategory = async (category) => {
+  const res = await fetch(`${API_BASE_URL}/posts/evening/${category}`);
   if (!res.ok) throw new Error("Failed to fetch post");
 
   return res.json();
@@ -55,6 +73,7 @@ export const fetchNoOfposts = async () => {
   if (!res.ok) throw new Error("Failed to fetch lotteries");
   return res.json();
 };
+
 export const updatePost = async (id, postData) => {
   try {
     const response = await fetch(`${API_BASE_URL}/posts/${id}`, {

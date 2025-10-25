@@ -128,7 +128,7 @@ const navItems = [
         logo: information,
         links: [
           { name: "FAQs", url: "/faqs" },
-          { name: "Scratch Off Tickets", url: "/scratch" },
+          { name: "Sitemap", url: "/sitemap" },
           { name: "Vax & Scratch", url: "/vax-scratch" },
         ],
         borderColor: "border-red-500",
