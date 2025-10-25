@@ -1,6 +1,8 @@
 // src/components/SEO.jsx
 import { Helmet } from "react-helmet";
 import PropTypes from "prop-types";
+import { useContext } from "react";
+import { SEOContext } from "../context/SeoContext";
 
 /**
  * SEO Component - Dynamic Meta Tags
@@ -27,38 +29,55 @@ const SEO = ({
   section,
   tags,
 }) => {
-  // Default site info (can be fetched from admin settings API)
-  const siteTitle = "Lottery Results Hub";
-  const siteName = "Lottery Results Hub";
-  const siteUrl = window.location.origin;
-  const twitterHandle = "@lotteryresults";
+  // Get dynamic site settings from context
+  const { seoSettings } = useContext(SEOContext);
 
-  // Construct full title
+  // Use context values or fall back to defaults
+  const siteTitle = seoSettings?.siteTitle || "Lottery Results Hub";
+  const siteName = seoSettings?.siteTitle || "Lottery Results Hub";
+  const siteLogo = seoSettings?.siteLogo || "";
+  const twitterHandle = seoSettings?.twitterSite || "@lotteryresults";
+  const defaultDescription =
+    seoSettings?.siteDescription ||
+    "Your trusted source for lottery results, winning numbers, and jackpot information.";
+  const defaultKeywords =
+    seoSettings?.siteKeywords ||
+    "lottery, results, winning numbers, jackpot, powerball, mega millions";
+
+  // Use page-specific OG tags if provided, otherwise use context or defaults
+  const ogTitle = title || seoSettings?.ogTitle || siteTitle;
+  const ogDescription =
+    description || seoSettings?.ogDescription || defaultDescription;
+  const ogImage = seoSettings?.ogImage || siteLogo;
+  const twitterCard = seoSettings?.twitterCard || "summary_large_image";
+
+  // Construct full title - use page title if provided
   const fullTitle = title ? `${title} | ${siteTitle}` : siteTitle;
 
-  // Construct canonical URL
+  // Construct canonical URL - use provided canonical or current URL
   const canonicalUrl = canonical || window.location.href;
 
   return (
     <Helmet>
-      {/* Basic Meta Tags */}
       <title>{fullTitle}</title>
-      <meta name="description" content={description} />
-      {keywords && <meta name="keywords" content={keywords} />}
+      <meta name="description" content={description || defaultDescription} />
+      <meta name="keywords" content={keywords || defaultKeywords} />
       {author && <meta name="author" content={author} />}
-
-      {/* Canonical URL */}
       <link rel="canonical" href={canonicalUrl} />
-
-      {/* Robots */}
       {noindex && <meta name="robots" content="noindex,nofollow" />}
+
+      {/* Favicon / Icon - From Database */}
+      {siteLogo && <link rel="icon" href={siteLogo} />}
+      {siteLogo && <link rel="shortcut icon" href={siteLogo} />}
+      {siteLogo && <link rel="apple-touch-icon" href={siteLogo} />}
 
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={type} />
       <meta property="og:url" content={canonicalUrl} />
-      <meta property="og:title" content={title || siteTitle} />
-      <meta property="og:description" content={description} />
+      <meta property="og:title" content={title || ogTitle} />
+      <meta property="og:description" content={description || ogDescription} />
       <meta property="og:site_name" content={siteName} />
+      {ogImage && <meta property="og:image" content={ogImage} />}
 
       {/* Open Graph - Article specific */}
       {type === "article" && publishedTime && (
@@ -78,10 +97,11 @@ const SEO = ({
         ))}
 
       {/* Twitter Card */}
-      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:card" content={twitterCard} />
       <meta name="twitter:site" content={twitterHandle} />
-      <meta name="twitter:title" content={title || siteTitle} />
-      <meta name="twitter:description" content={description} />
+      <meta name="twitter:title" content={title || ogTitle} />
+      <meta name="twitter:description" content={description || ogDescription} />
+      {ogImage && <meta name="twitter:image" content={ogImage} />}
 
       {/* Additional SEO */}
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -92,8 +112,8 @@ const SEO = ({
 };
 
 SEO.propTypes = {
-  title: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
+  title: PropTypes.string,
+  description: PropTypes.string,
   type: PropTypes.oneOf(["website", "article"]),
   canonical: PropTypes.string,
   noindex: PropTypes.bool,

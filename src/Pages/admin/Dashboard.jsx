@@ -1,7 +1,7 @@
-import { memo } from 'react';
-import DashboardStats from '../../components/admin/dashboard/DashboardStats';
-import RecentPosts from '../../components/admin/dashboard/RecentPosts';
-import { Link } from 'react-router-dom';
+import { memo } from "react";
+import DashboardStats from "../../components/admin/dashboard/DashboardStats";
+import RecentPosts from "../../components/admin/dashboard/RecentPosts";
+import { Link } from "react-router-dom";
 
 const Dashboard = memo(() => {
   return (
@@ -13,7 +13,6 @@ const Dashboard = memo(() => {
           Welcome to your lottery admin panel. Here's an overview of your site.
         </p>
       </div>
-      {console.log("Rendering Dashboard")}
 
       {/* Stats cards */}
       <DashboardStats />
@@ -27,7 +26,9 @@ const Dashboard = memo(() => {
 
         {/* Quick actions */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Quick Actions
+          </h3>
           <div className="space-y-3">
             <Link
               to="/admin/posts/create"
@@ -62,7 +63,9 @@ const Dashboard = memo(() => {
 
         {/* System status */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">System Status</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            System Status
+          </h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">Database</span>
@@ -85,7 +88,6 @@ const Dashboard = memo(() => {
   );
 });
 
-Dashboard.displayName = 'Dashboard';
+Dashboard.displayName = "Dashboard";
 
 export default Dashboard;
-

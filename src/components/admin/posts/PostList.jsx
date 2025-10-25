@@ -5,6 +5,9 @@ import { getAllRecentsPosts } from "../../../api/postApi";
 
 const PostList = memo(() => {
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [deleteMessage, setDeleteMessage] = useState("");
+  const [deleteMessageType, setDeleteMessageType] = useState(""); // 'success' or 'error'
 
   useEffect(() => {
     async function getPost() {
@@ -44,9 +47,41 @@ const PostList = memo(() => {
     });
   };
 
-  const handleDelete = (postId) => {
-    if (window.confirm("Are you sure you want to delete this post?")) {
-      setPosts(posts.filter((post) => post.id !== postId));
+  const handleDelete = async (postId, close) => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/posts/${postId}`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        // Remove post from local state
+        setPosts(posts.filter((post) => post.id !== postId));
+
+        setDeleteMessage("✅ Post deleted successfully!");
+        setDeleteMessageType("success");
+
+        // Close popup
+        if (close) close();
+
+        // Clear message after 3 seconds
+        setTimeout(() => setDeleteMessage(""), 3000);
+      } else {
+        const error = await response.json();
+        setDeleteMessage(`❌ ${error.message || "Failed to delete post"}`);
+        setDeleteMessageType("error");
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      setDeleteMessage(`❌ Error: ${error.message}`);
+      setDeleteMessageType("error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -75,6 +110,19 @@ const PostList = memo(() => {
           Create New Post
         </Link>
       </div>
+
+      {/* Delete Message */}
+      {deleteMessage && (
+        <div
+          className={`p-4 rounded-lg border-l-4 ${
+            deleteMessageType === "success"
+              ? "bg-green-50 border-green-500 text-green-900"
+              : "bg-red-50 border-red-500 text-red-900"
+          }`}
+        >
+          <p className="font-medium text-sm">{deleteMessage}</p>
+        </div>
+      )}
 
       {/* Filters and Search */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -123,7 +171,6 @@ const PostList = memo(() => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Date
                 </th>
-
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Author
                 </th>
@@ -151,8 +198,9 @@ const PostList = memo(() => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     {formatDate(post.date)}
                   </td>
-
-                  {/*    */}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    {post.author || "N/A"}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end space-x-2">
                       <Link
@@ -163,30 +211,38 @@ const PostList = memo(() => {
                       </Link>
                       <Popup
                         trigger={
-                          <button
-                            onClick={() => handleDelete(post.id)}
-                            className="text-red-600 hover:text-red-700"
-                          >
+                          <button className="text-red-600 hover:text-red-700">
                             Delete
                           </button>
                         }
                         modal
                       >
                         {(close) => (
-                          <div className="p-4 bg-slate-800 text-white rounded-lg">
-                            <p>Are you sure you want to delete this post?</p>
-                            <div className="actions flex justify-around">
+                          <div className="p-6 bg-white rounded-lg shadow-lg max-w-sm">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                              Delete Post
+                            </h3>
+                            <p className="text-gray-600 mb-6">
+                              Are you sure you want to delete "{post.title}"?
+                              This action cannot be undone.
+                            </p>
+                            <div className="flex justify-end gap-3">
                               <button
                                 onClick={close}
-                                className="bg-red-600 py-1.5 px-2.5 hover:bg-red-500 rounded-lg mt-2"
+                                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
                               >
                                 Cancel
                               </button>
                               <button
-                                onClick={() => handleDelete}
-                                className="bg-blue-500 py-1 px-2 hover:bg-blue-600 rounded-lg mt-2"
+                                onClick={() => handleDelete(post.id, close)}
+                                disabled={loading}
+                                className={`px-4 py-2 rounded-lg text-white transition-colors ${
+                                  loading
+                                    ? "bg-red-400 cursor-not-allowed"
+                                    : "bg-red-600 hover:bg-red-700"
+                                }`}
                               >
-                                Confirm
+                                {loading ? "Deleting..." : "Delete"}
                               </button>
                             </div>
                           </div>

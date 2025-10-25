@@ -32,8 +32,8 @@ function App() {
     <AuthProvider>
       <RoleProvider>
         <SEOProvider>
-          <SEO title="Home" description="Welcome" />
           <Router>
+            <SEO title="Home" description="Welcome" />
             <SpeedInsights />
             <Suspense fallback={<LoadingFallback />}>
               <Routes>

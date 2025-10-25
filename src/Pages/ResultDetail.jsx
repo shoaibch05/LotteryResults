@@ -1,4 +1,4 @@
-// src/pages/LotteryResultsPage.jsx
+// src/pages/ResultDetail.jsx
 
 import dayjs from "dayjs";
 import NumbersDisplay from "../components/page_components/NumberDisplay";
@@ -15,14 +15,16 @@ const LotteryResultsPage = () => {
   const { id } = useParams();
   const [middayBreakdown, setMiddayBreakdown] = useState([]);
   const [eveningBreakdown, setEveningBreakdown] = useState([]);
-  const [postData, setPostData] = useState();
+  const [postData, setPostData] = useState(null); // Initialize as null, not undefined
   const [totals, setTotals] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchBreakdowns = async () => {
       try {
-        const data = await getPrizeBreakDownByPost(id); // Replace '1' with actual postId
+        const data = await getPrizeBreakDownByPost(id);
         const resultDetails = await getPostById(id);
+
         setPostData(resultDetails);
 
         // Separate data for each draw type
@@ -34,40 +36,84 @@ const LotteryResultsPage = () => {
         setTotals(data.totals);
       } catch (err) {
         console.error("Error fetching prize breakdowns:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchBreakdowns();
-  }, []);
+  }, [id]);
 
-  // Construct canonical URL
-  const canonicalUrl = `${window.location.origin}/${category}/results/${date}`;
+  // Only construct SEO data AFTER postData is loaded
+  const seoData = postData
+    ? {
+        canonicalUrl: `${window.location.origin}/${postData.category}/results/${postData.date}`,
+        seoTitle:
+          postData.meta_title ||
+          `${postData.title} - ${postData.category} Results`,
+        seoDescription:
+          postData.meta_desc ||
+          `Check the complete ${postData.category} lottery results for ${postData.date}. View winning numbers, prize breakdown, and winner statistics.`,
+        seoKeywords: `${postData.category}, lottery results, winning numbers, ${postData.date}, prize breakdown, lottery winners`,
+        publishedTime: new Date(postData.created_at).toISOString(),
+        modifiedTime: postData.updated_at
+          ? new Date(postData.updated_at).toISOString()
+          : null,
+        section: postData.category,
+        tags: [postData.category, "lottery", "results", "winning numbers"],
+      }
+    : {
+        // Default values while loading
+        canonicalUrl: window.location.href,
+        seoTitle: "Lottery Results",
+        seoDescription: "Check lottery results and winning numbers.",
+        seoKeywords: "lottery, results, winning numbers",
+        publishedTime: null,
+        modifiedTime: null,
+        section: "lottery",
+        tags: ["lottery", "results"],
+      };
 
-  // Prepare SEO data
-  const seoTitle =
-    post.meta_title || `${post.title} - ${post.category} Results`;
-  const seoDescription =
-    post.meta_desc ||
-    `Check the complete ${post.category} lottery results for ${formattedDate}. View winning numbers, prize breakdown, and winner statistics.`;
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="h-28 bg-gray-100 rounded mb-8 animate-pulse" />
+        <div className="h-64 bg-gray-100 rounded mb-8 animate-pulse" />
+        <div className="h-56 bg-gray-100 rounded mb-8 animate-pulse" />
+      </div>
+    );
+  }
 
-  // Keywords for SEO
-  const seoKeywords = `${post.category}, lottery results, winning numbers, ${formattedDate}, prize breakdown, lottery winners`;
+  // Show error state
+  if (!postData) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="text-center p-10 bg-white rounded-lg shadow">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+            Results Not Found
+          </h2>
+          <p className="text-gray-600">
+            The lottery results could not be found.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
       <SEO
-        title={seoTitle}
-        description={seoDescription}
+        title={seoData.seoTitle}
+        description={seoData.seoDescription}
         type="article"
-        canonical={canonicalUrl}
-        keywords={seoKeywords}
+        canonical={seoData.canonicalUrl}
+        keywords={seoData.seoKeywords} // Add this!
         author="Lottery Results Hub"
-        publishedTime={new Date(post.created_at).toISOString()}
-        modifiedTime={
-          post.updated_at ? new Date(post.updated_at).toISOString() : null
-        }
-        section={post.category}
-        tags={[post.category, "lottery", "results", "winning numbers"]}
+        publishedTime={seoData.publishedTime}
+        modifiedTime={seoData.modifiedTime}
+        section={seoData.section}
+        tags={seoData.tags}
       />
 
       <div className="max-w-6xl mx-auto px-4 py-8 bg-gray-50">

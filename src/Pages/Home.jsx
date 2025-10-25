@@ -12,7 +12,6 @@ import AdBanner from "../components/AdBanner";
 import { getPostBycategory } from "../api/postApi";
 import { getLatestJackpotByCategory } from "../api/jackpotApi";
 import { formatDate, parseNumbers } from "../utils/utilityfun";
-import SEO from "../components/SEO";
 
 // Preload critical images
 const preloadImages = () => {
@@ -113,24 +112,9 @@ const Home = () => {
   }, []); // Empty dependency array - runs once on mount
 
   const draws = [megaData, powerData].filter(Boolean);
-  const seoTitle =
-    "New York Lottery Results - Latest Winning Numbers & Jackpots";
-  const seoDescription =
-    "Get the latest New York Lottery results including Powerball, Mega Millions, Lotto, Take 5, Numbers, Win 4, and more. Check winning numbers, jackpots, and prize breakdowns updated daily.";
-  const seoKeywords =
-    "New York lottery, lottery results, winning numbers, Powerball, Mega Millions, NY Lotto, jackpot, prize breakdown";
 
   return (
     <>
-      <SEO
-        title={seoTitle}
-        description={seoDescription}
-        type="website"
-        canonical={window.location.origin}
-        keywords={seoKeywords}
-        author="Lottery Results Hub"
-      />
-
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Intro text */}
         <div className="bg-white shadow-md p-6 rounded-lg mb-8">
