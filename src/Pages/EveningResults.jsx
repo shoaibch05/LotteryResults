@@ -7,8 +7,14 @@ import { useLocation } from "react-router-dom";
 import { getAllEveningresultsBycategory } from "../api/postApi";
 import { formatDate, parseNumbers } from "../utils/utilityfun";
 import { getLotteryBySlug } from "../api/lotteryApi";
+import { useAds } from "../context/AdProvider";
+import AdBanner from "../components/AdBanner";
 
 const EveningResults = () => {
+  const { getAdsFor } = useAds();
+
+  const adsUnderHeader = getAdsFor("EveningResults", "underHeader");
+  const adsBottom = getAdsFor("EveningResults", "bottom");
   const [category, setCategory] = useState(null);
   const [results, setResults] = useState([]);
   const [filteredResults, setFilteredResults] = useState([]);
@@ -70,6 +76,9 @@ const EveningResults = () => {
           category?.NAME || "Lottery"
         } Results are shown here shortly after each draw takes place. Make sure you refresh the page to see the very latest result.`}
       />
+      {adsUnderHeader.map((a) => (
+        <AdBanner key={a.slot} slot={a.slot} height={120} />
+      ))}
 
       {/* Jackpot Banner */}
       <JackpotBanner />
@@ -86,6 +95,9 @@ const EveningResults = () => {
           Past Winning Numbers
         </button>
       </div> */}
+      {adsBottom.map((a) => (
+        <AdBanner key={a.slot} slot={a.slot} height={120} />
+      ))}
     </div>
   );
 };

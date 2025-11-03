@@ -22,17 +22,17 @@ const GameCard = ({
 
   // Pre-calculate number display to prevent layout shifts
   const renderNumbers = (numbers, bonusBall = null) => (
-    <div className="flex gap-2 items-center min-h-[40px]">
+    <div className="flex flex-wrap gap-2 items-center justify-center min-h-[40px]">
       {numbers.map((num, i) => (
         <span
           key={i}
-          className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-500 text-gray-800 font-semibold flex-shrink-0"
+          className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full border border-gray-500 text-gray-800 text-sm sm:text-base font-semibold"
         >
           {num}
         </span>
       ))}
       {bonusBall && (
-        <span className="w-10 h-10 flex items-center justify-center rounded-full bg-red-600 text-white font-bold flex-shrink-0">
+        <span className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-red-600 text-white font-bold">
           {bonusBall}
         </span>
       )}
@@ -53,7 +53,7 @@ const GameCard = ({
             width="120"
             height="40"
             className={`max-w-[120px] max-h-[40px] transition-opacity duration-300 ${
-              imageLoaded ? 'opacity-100' : 'opacity-0'
+              imageLoaded ? "opacity-100" : "opacity-0"
             }`}
             loading="lazy"
             decoding="async"
@@ -69,11 +69,13 @@ const GameCard = ({
       <div className="p-4">
         <div className="flex flex-col items-center">
           {/* Date */}
-          <p className="text-gray-700 text-sm font-semibold mb-3 min-h-[20px]">{date}</p>
+          <p className="text-gray-700 text-sm font-semibold mb-3 min-h-[20px]">
+            {date}
+          </p>
 
           {/* Numbers */}
-          <div className="flex flex-col justify-center items-center gap-2 mb-3 w-full">
-            <div className="flex gap-2 items-center justify-between">
+          <div className="flex flex-col justify-center  items-center gap-2 mb-3 w-full">
+            <div className="flex gap-2 items-center justify-between ">
               <span className="text-sm font-medium min-w-[70px]">Midday:</span>
               {renderNumbers(midday, MidBonusBall)}
             </div>

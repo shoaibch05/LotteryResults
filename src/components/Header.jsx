@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NYLotto from "../assets/lotto-logo-white.svg";
 import Megamillion from "../assets/mega-millions-logo-white.svg";
 import Take5 from "../assets/take-5-logo-white.svg";
@@ -128,8 +128,10 @@ const navItems = [
         logo: information,
         links: [
           { name: "FAQs", url: "/faqs" },
+          { name: "About Us", url: "/about" },
+          { name: "Disclaimer", url: "/disclaimer" },
+          { name: "Privacy", url: "/privacy" },
           { name: "Sitemap", url: "/sitemap" },
-          { name: "Vax & Scratch", url: "/vax-scratch" },
         ],
         borderColor: "border-red-500",
       },
@@ -140,6 +142,26 @@ const navItems = [
 export default function Header({ headerbgColor = "bg-white" }) {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [logo, setlogo] = useState("http://localhost:5173/vite.svg");
+  useEffect(() => {
+    const fetchlogo = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:5000/api/site/seo-settings"
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setlogo(data.data.siteLogo);
+        }
+      } catch (error) {
+        console.error("Error fetching site logo settings:", error);
+      }
+    };
+    fetchlogo();
+  }, []);
+  if (logo) {
+    console.log("the logo is ", logo);
+  }
 
   // Close mobile menu when route changes
   const handleLinkClick = () => {
@@ -162,7 +184,7 @@ export default function Header({ headerbgColor = "bg-white" }) {
         <div className="flex items-center bg-red-600">
           <Link to="/" onClick={handleLinkClick}>
             <img
-              src={NYLotto}
+              src={logo}
               alt="NY Lotto"
               className="h-10"
               width="120"

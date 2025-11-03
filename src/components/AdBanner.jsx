@@ -7,16 +7,21 @@ const AdBanner = ({ slot, width = "100%", height = 90, style = {} }) => {
     // We don't have AdSense script in testing — so do nothing.
   }, [slot]);
 
-  if (!slot) return null;
+  if (!slot) {
+    // Return empty div with fixed height to prevent layout shift
+    return <div style={{ height: `${height}px`, width }} />;
+  }
 
-  // Mock visual box so the admin and devs can see placement
+  // Mock visual box with fixed dimensions - CRITICAL for CLS
   return (
     <div
       role="region"
       aria-label={`Ad placeholder ${slot}`}
       style={{
         width,
-        height,
+        height: `${height}px`, // Force exact height as string with px
+        minHeight: `${height}px`, // Ensure minimum height
+        maxHeight: `${height}px`, // Prevent expansion
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -26,6 +31,8 @@ const AdBanner = ({ slot, width = "100%", height = 90, style = {} }) => {
         color: "#075985",
         fontWeight: 600,
         margin: "12px 0",
+        flexShrink: 0, // Prevent shrinking
+        overflow: "hidden", // Prevent content overflow
         ...style,
       }}
     >

@@ -1,14 +1,17 @@
 // src/pages/LotteryPage.jsx
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Meta, useParams } from "react-router-dom";
 import { getLotteryBySlug } from "../api/lotteryApi";
 import SEO from "../components/SEO";
+import { useAds } from "../context/AdProvider";
+import AdBanner from "../components/AdBanner";
 // import { T } from "vitest/dist/chunks/reporters.d.BFLkQcL6.js";
 
-const LotteryHero = lazy(() =>
-  import("../components/page_components/LotteryHero")
-);
-// import LotteryHero from "../components/page_components/LotteryHero";
+// const LotteryHero = lazy(() =>
+//   import("../components/page_components/LotteryHero")
+// );
+
+import LotteryHero from "../components/page_components/LotteryHero";
 const LotteryHistory = lazy(() =>
   import("../components/page_components/LotteryHistory")
 );
@@ -22,6 +25,11 @@ const LotteryFAQs = lazy(() =>
 
 const LotteryPage = () => {
   const { slug } = useParams();
+  const { getAdsFor } = useAds();
+  const adsUnderHeader = getAdsFor("lotteryPage", "underHeader");
+  const adsUnderGameCards = getAdsFor("lotteryPage", "underGameCards");
+  const adsBottom = getAdsFor("lotteryPage", "bottom");
+
   const [lottery, setLottery] = useState(null);
   const [loading, setLoading] = useState(true);
   // const [lotteries, setLotteries] = useState([]);
@@ -119,33 +127,48 @@ const LotteryPage = () => {
       />
 
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <Suspense
+        {/* <Suspense
           fallback={
             <div className="h-28 bg-white rounded mb-8 animate-pulse" />
           }
         >
           <LotteryHero title={lottery.NAME} description={lottery.description} />
-        </Suspense>
+        </Suspense> */}
+        <LotteryHero title={lottery.NAME} description={lottery.description} />
+        <div className="min-h-[120px] mb-8">
+          {adsUnderHeader.map((a) => (
+            <AdBanner key={a.slot} slot={a.slot} height={120} />
+          ))}
+        </div>
 
         <LazySection heightClass="h-64">
           <Suspense
             fallback={
-              <div className="h-64 bg-gray-100 rounded mb-8 animate-pulse" />
+              <div className=" bg-gray-100 rounded mb-8 animate-pulse" />
             }
           >
-            <LotteryHistory history={lottery.History} />
+            <div className="min-h-64">
+              <LotteryHistory history={lottery.History} />
+            </div>
           </Suspense>
         </LazySection>
 
-        <LazySection heightClass="h-56">
+        <LazySection heightClass="h-80">
           <Suspense
             fallback={
-              <div className="h-56 bg-gray-100 rounded mb-8 animate-pulse" />
+              <div className="min-h-60 bg-gray-100 rounded mb-8 animate-pulse" />
             }
           >
-            <HowToPlay steps={lottery.How_To_Play} />
+            <div className="min-h-80">
+              <HowToPlay steps={lottery.How_To_Play} />
+            </div>
           </Suspense>
         </LazySection>
+        <div className="min-h-[120px] mb-8">
+          {adsUnderGameCards.map((a) => (
+            <AdBanner key={a.slot} slot={a.slot} height={120} />
+          ))}
+        </div>
 
         <LazySection heightClass="h-56">
           <Suspense
@@ -156,6 +179,11 @@ const LotteryPage = () => {
             <TopWinners winners={lottery.Winners} />
           </Suspense>
         </LazySection>
+        <div className="min-h-[120px] mb-8">
+          {adsBottom.map((a) => (
+            <AdBanner key={a.slot} slot={a.slot} height={120} />
+          ))}
+        </div>
       </div>
     </>
   );

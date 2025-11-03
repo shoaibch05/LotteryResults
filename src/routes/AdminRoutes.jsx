@@ -10,7 +10,6 @@ const Jackpots = lazy(() => import("../Pages/admin/Jackpot"));
 const AdminCategoriesPage = lazy(() => import("../Pages/admin/Categories"));
 const Users = lazy(() => import("../Pages/admin/Users"));
 const SEO = lazy(() => import("../Pages/admin/SEO"));
-const SiteSettings = lazy(() => import("../Pages/admin/SiteSettings"));
 
 // Import post components for nested routes
 import PostList from "../components/admin/posts/PostList";
@@ -65,6 +64,7 @@ const AdminRoutes = memo(() => {
           >
             {/* <Route index element={<AdminCategoriesPage />} /> */}
             <Route path=":categoryName" element={<CategoryInfoPage />} />
+
             {/* <Route path="new" element={<AdminCategoriesPage />} /> */}
             <Route
               path="*"
@@ -128,16 +128,6 @@ const AdminRoutes = memo(() => {
             element={
               <ProtectedRoute requiredPermission="manage_ad_placement">
                 <AdminPanel />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Site settings - accessible to admins and above */}
-          <Route
-            path="settings"
-            element={
-              <ProtectedRoute requiredPermission="manage_site_settings">
-                <SiteSettings />
               </ProtectedRoute>
             }
           />

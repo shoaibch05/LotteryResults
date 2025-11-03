@@ -58,12 +58,6 @@ const AdminSidebar = memo(() => {
       icon: "🔍",
       permission: "manage_seo",
     },
-    {
-      name: "Site Settings",
-      path: "/admin/settings",
-      icon: "⚙️",
-      permission: "manage_site_settings",
-    },
   ];
 
   const filteredMenuItems = menuItems.filter((item) => {

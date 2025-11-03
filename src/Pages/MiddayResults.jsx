@@ -8,9 +8,15 @@ import { getAllMiddayresultsBycategory } from "../api/postApi";
 import { getLotteryBySlug } from "../api/lotteryApi";
 import dayjs from "dayjs";
 import { formatDate, parseNumbers } from "../utils/utilityfun";
+import { useAds } from "../context/AdProvider";
+import AdBanner from "../components/AdBanner";
 // import { formatDate, parseNumbers } from "../utils/helpers"; // adjust path as needed
 
 const MiddayResults = () => {
+  const { getAdsFor } = useAds();
+
+  const adsUnderHeader = getAdsFor("MiddayResults", "underHeader");
+  const adsBottom = getAdsFor("MiddayResults", "bottom");
   const [category, setCategory] = useState(null);
   const [results, setResults] = useState([]);
   const [filteredResults, setFilteredResults] = useState([]);
@@ -38,12 +44,14 @@ const MiddayResults = () => {
 
   // Extract slug from URL
   const pathParts = location.pathname.split("/").filter(Boolean);
+  const slugOriginal = pathParts.length > 0 ? pathParts[0] : null;
   const slug = pathParts.length > 0 ? pathParts[0].toLowerCase() : null;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getAllMiddayresultsBycategory(slug);
+        console.log(data);
         const formattedResults = data.map((item) => ({
           id: item.id,
           date: formatDate(item.created_at),
@@ -72,6 +80,10 @@ const MiddayResults = () => {
         } Results are shown here shortly after each draw takes place. Make sure you refresh the page to see the very latest result.`}
       />
 
+      {adsUnderHeader.map((a) => (
+        <AdBanner key={a.slot} slot={a.slot} height={120} />
+      ))}
+
       {/* Jackpot Banner */}
       <JackpotBanner />
 
@@ -81,6 +93,9 @@ const MiddayResults = () => {
       {/* Results Table */}
       <ResultsTable results={isFiltered ? filteredResults : results} hasBonus />
 
+      {adsBottom.map((a) => (
+        <AdBanner key={a.slot} slot={a.slot} height={120} />
+      ))}
       {/* Optional Past Winning Button */}
       {/* <div className="flex justify-center mt-6">
         <button className="bg-blue-700 text-white px-6 py-3 rounded font-semibold">

@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 // import { fetchCategories } from "../../api/categoriesApi";
 import { getAllName } from "../../api/lotteryApi";
+import CreateCategoryForm from "../../components/admin/categoresinfo/CreateCategoryForm";
 
 const AdminCategoriesPage = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  // const navigate = useNavigate();
 
   useEffect(() => {
     const getCategories = async () => {
@@ -32,11 +35,21 @@ const AdminCategoriesPage = () => {
         <h1 className="text-2xl font-bold">Admin: Categories</h1>
         <button
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-          onClick={() => navigate("/admin/categoriesinfo/new")}
+          onClick={() => setIsCreateModalOpen(true)}
         >
           + Add New Category
         </button>
       </div>
+      {isCreateModalOpen && (
+        <CreateCategoryForm
+          onCreate={async () => {
+            const data = await getAllName();
+            setCategories(data);
+          }}
+          onClose={() => setIsCreateModalOpen(false)}
+        />
+      )}
+
       <ul className="space-y-2">
         {categories.map((category, index) => (
           <li key={index}>

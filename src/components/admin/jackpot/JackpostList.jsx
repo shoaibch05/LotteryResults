@@ -1,11 +1,13 @@
 import { memo, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Popup from "reactjs-popup";
 import { getJackpots, deleteJackpot } from "../../../api/jackpotApi";
 
 const JackpotList = memo(() => {
   const [jackpots, setJackpots] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [deleteMessage, setDeleteMessage] = useState("");
+  const [deleteMessageType, setDeleteMessageType] = useState("");
 
   // Fetch all jackpots
   useEffect(() => {
@@ -32,16 +34,28 @@ const JackpotList = memo(() => {
     });
   };
 
-  // Handle delete
+  // Handle delete with native confirm
   const handleDelete = async (jackpotId) => {
-    if (window.confirm("Are you sure you want to delete this jackpot?")) {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this jackpot? This action cannot be undone."
+      )
+    ) {
+      setLoading(true);
       try {
         await deleteJackpot(jackpotId);
         setJackpots((prev) => prev.filter((j) => j.id !== jackpotId));
-        alert("Jackpot deleted successfully!");
+        setDeleteMessage("✅ Jackpot deleted successfully!");
+        setDeleteMessageType("success");
+        setTimeout(() => setDeleteMessage(""), 3000);
       } catch (err) {
         console.error("Error deleting jackpot:", err);
-        alert("Failed to delete jackpot. Check console for details.");
+        setDeleteMessage(
+          "❌ Failed to delete jackpot. Check console for details."
+        );
+        setDeleteMessageType("error");
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -68,6 +82,19 @@ const JackpotList = memo(() => {
           Create New Jackpot
         </Link>
       </div>
+
+      {/* Delete Message */}
+      {deleteMessage && (
+        <div
+          className={`p-4 rounded-lg border-l-4 ${
+            deleteMessageType === "success"
+              ? "bg-green-50 border-green-500 text-green-900"
+              : "bg-red-50 border-red-500 text-red-900"
+          }`}
+        >
+          <p className="font-medium text-sm">{deleteMessage}</p>
+        </div>
+      )}
 
       {/* Search */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -143,37 +170,13 @@ const JackpotList = memo(() => {
                         Edit
                       </Link>
 
-                      <Popup
-                        trigger={
-                          <button className="text-red-600 hover:text-red-700">
-                            Delete
-                          </button>
-                        }
-                        modal
+                      <button
+                        onClick={() => handleDelete(jackpot.id)}
+                        disabled={loading}
+                        className="text-red-600 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {(close) => (
-                          <div className="p-4 bg-slate-800 text-white rounded-lg">
-                            <p>Are you sure you want to delete this jackpot?</p>
-                            <div className="actions flex justify-around mt-4">
-                              <button
-                                onClick={close}
-                                className="bg-gray-600 py-1.5 px-3 hover:bg-gray-500 rounded-lg"
-                              >
-                                Cancel
-                              </button>
-                              <button
-                                onClick={() => {
-                                  handleDelete(jackpot.id);
-                                  close();
-                                }}
-                                className="bg-red-600 py-1.5 px-3 hover:bg-red-500 rounded-lg"
-                              >
-                                Confirm
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </Popup>
+                        Delete
+                      </button>
                     </div>
                   </td>
                 </tr>

@@ -19,7 +19,7 @@ const AdminPanel = () => {
 
   return (
     <div style={{ padding: 20 }}>
-      <h1>Admin — Ad Placement Editor (mock)</h1>
+      <h1>Admin — Ad Placement Editor</h1>
 
       <div style={{ marginBottom: 12 }}>
         <label>

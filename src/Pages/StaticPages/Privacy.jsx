@@ -26,3 +26,4 @@ const Privacy = () => {
     </section>
   );
 };
+export default Privacy;

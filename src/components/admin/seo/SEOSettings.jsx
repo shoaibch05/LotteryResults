@@ -9,6 +9,7 @@ const SEOSettings = memo(() => {
     siteTitle: "",
     siteDescription: "",
     siteKeywords: "",
+    siteIcon: "", // Fixed: Changed from siteicon to siteIcon
     siteLogo: "",
     canonicalUrl: "",
     ogTitle: "",
@@ -37,6 +38,7 @@ const SEOSettings = memo(() => {
         siteTitle: seoSettings.siteTitle || "",
         siteDescription: seoSettings.siteDescription || "",
         siteKeywords: seoSettings.siteKeywords || "",
+        siteIcon: seoSettings.siteIcon || "", // Fixed: consistent naming
         siteLogo: seoSettings.siteLogo || "",
         canonicalUrl: seoSettings.canonicalUrl || "",
         ogTitle: seoSettings.ogTitle || "",
@@ -107,6 +109,26 @@ const SEOSettings = memo(() => {
         );
         setSaveMessageType("error");
         setSaveLoading(false);
+        return;
+      }
+      const validateUrl = (url) => {
+        if (!url) return true; // Optional field
+        return url.startsWith("/") || url.startsWith("http");
+      };
+
+      if (!validateUrl(formData.siteLogo)) {
+        setSaveMessage(
+          "❌ Logo must be a relative path (/assets/...) or full URL"
+        );
+        setSaveMessageType("error");
+        return;
+      }
+
+      if (!validateUrl(formData.siteIcon)) {
+        setSaveMessage(
+          "❌ Icon must be a relative path (/assets/...) or full URL"
+        );
+        setSaveMessageType("error");
         return;
       }
 
@@ -287,16 +309,44 @@ const SEOSettings = memo(() => {
               />
             </div>
 
-            {/* Site Logo / Favicon */}
+            {/* Site Icon / Favicon */}
+            <div>
+              <label
+                htmlFor="siteIcon"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Site Favicon URL
+              </label>
+              <input
+                type="text"
+                id="siteIcon"
+                name="siteIcon"
+                value={formData.siteIcon}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="https://yoursite.com/favicon.svg"
+              />
+              {formData.siteIcon && (
+                <div className="mt-2">
+                  <img
+                    src={formData.siteIcon}
+                    alt="Favicon preview"
+                    className="h-12 w-12 rounded border bg-green-400"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Site Logo */}
             <div>
               <label
                 htmlFor="siteLogo"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Site Logo URL (Favicon)
+                Site Logo URL
               </label>
               <input
-                type="url"
+                type="text"
                 id="siteLogo"
                 name="siteLogo"
                 value={formData.siteLogo}
@@ -309,7 +359,7 @@ const SEOSettings = memo(() => {
                   <img
                     src={formData.siteLogo}
                     alt="Logo preview"
-                    className="h-12 w-12 rounded border"
+                    className="h-12 w-12 rounded border bg-green-400"
                   />
                 </div>
               )}

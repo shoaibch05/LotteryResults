@@ -28,8 +28,18 @@ const preloadImages = () => {
 
 preloadImages();
 
-// Helper function to parse lottery numbers
-// Checks if last item is a key-value pair (contains ":"), if so treats it as bonus
+// Loading skeleton component with exact dimensions
+const GameCardSkeleton = () => (
+  <div className="bg-white shadow-md rounded-md overflow-hidden border border-gray-200 h-[450px]">
+    <div className="bg-gray-300 h-12"></div>
+    <div className="p-4 space-y-4">
+      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+      <div className="h-10 bg-gray-200 rounded"></div>
+      <div className="h-6 bg-gray-200 rounded w-1/2"></div>
+      <div className="h-12 bg-gray-200 rounded"></div>
+    </div>
+  </div>
+);
 
 const Home = () => {
   const { getAdsFor } = useAds();
@@ -109,7 +119,7 @@ const Home = () => {
     };
 
     fetchData();
-  }, []); // Empty dependency array - runs once on mount
+  }, []);
 
   const draws = [megaData, powerData].filter(Boolean);
 
@@ -139,34 +149,29 @@ const Home = () => {
           </p>
         </div>
 
-        {adsUnderHeader.map((a) => (
-          <AdBanner key={a.slot} slot={a.slot} height={120} />
-        ))}
+        {/* Ad Banner with fixed height to prevent shift */}
+        <div className="min-h-[120px] mb-8">
+          {adsUnderHeader.map((a) => (
+            <AdBanner key={a.slot} slot={a.slot} height={120} />
+          ))}
+        </div>
 
-        {/* Cards */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        {/* Cards - Fixed grid with consistent height */}
+        <div className="grid md:grid-cols-2 gap-6 mb-8 min-h-[450px]">
           {loading ? (
-            // Loading skeleton
-            <div className="space-y-6 md:col-span-2">
-              <div className="grid md:grid-cols-2 gap-6">
-                {[1, 2].map((i) => (
-                  <div
-                    key={i}
-                    className="bg-white shadow-md rounded-md overflow-hidden border border-gray-200 min-h-[400px] animate-pulse"
-                  >
-                    <div className="bg-gray-300 h-12"></div>
-                    <div className="p-4 space-y-4">
-                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                      <div className="h-10 bg-gray-200 rounded"></div>
-                      <div className="h-6 bg-gray-200 rounded w-1/2"></div>
-                      <div className="h-12 bg-gray-200 rounded"></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <>
+              <GameCardSkeleton />
+              <GameCardSkeleton />
+            </>
           ) : draws.length > 0 ? (
-            <Suspense fallback={<div>Loading cards...</div>}>
+            <Suspense
+              fallback={
+                <>
+                  <GameCardSkeleton />
+                  <GameCardSkeleton />
+                </>
+              }
+            >
               {draws.map((draw) => (
                 <GameCard key={draw.id} {...draw} />
               ))}
@@ -178,15 +183,21 @@ const Home = () => {
           )}
         </div>
 
-        {adsUnderGameCards.map((a) => (
-          <AdBanner key={a.slot} slot={a.slot} height={120} />
-        ))}
+        {/* Ad Banner with fixed height */}
+        <div className="min-h-[120px] mb-8">
+          {adsUnderGameCards.map((a) => (
+            <AdBanner key={a.slot} slot={a.slot} height={120} />
+          ))}
+        </div>
 
         <LatestPosts />
 
-        {adsBottom.map((a) => (
-          <AdBanner key={a.slot} slot={a.slot} height={120} />
-        ))}
+        {/* Ad Banner with fixed height */}
+        <div className="min-h-[120px] mb-8">
+          {adsBottom.map((a) => (
+            <AdBanner key={a.slot} slot={a.slot} height={120} />
+          ))}
+        </div>
       </div>
     </>
   );

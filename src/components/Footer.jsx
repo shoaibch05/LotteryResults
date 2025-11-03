@@ -1,54 +1,68 @@
 // src/components/Footer.jsx
-import { memo } from 'react'; // Added memo for performance, if props are stable
+import { memo } from "react";
 
 const Footer = () => {
-   const footerContent = {
+  const footerContent = {
     copyright: "© 2025 Lottery.org",
     paragraphs: [
       "NYLottery.org is an independent service that offers unofficial results and information about games provided by the New York State Lottery. It is not endorsed by or affiliated with any state, multi-state or national lottery provider, including New York State Gaming Commission.",
-      "All trademarks and service marks remain the property of their rightful owners and used for informational purposes only."
+      "All trademarks and service marks remain the property of their rightful owners and used for informational purposes only.",
     ],
     links: [
       { text: "Disclaimer", href: "#" },
       { text: "Privacy Policy", href: "#" },
       { text: "Terms", href: "#" },
-      { text: "Contact", href: "#" }
-    ]
+      { text: "Contact", href: "#" },
+    ],
   };
 
   return (
-    <footer 
-      // Tailwind classes where possible, inline for specific non-Tailwind needs
-      className=" border-t border-gray-200 min-h-8 py-2 w-full  mt-auto"
-      
-      style={{ 
-        backgroundColor: 'var(--color-brand-gray)'
-
+    <footer
+      className="border-t border-gray-200 w-full"
+      style={{
+        backgroundColor: "var(--color-brand-gray)",
+        height: "320px", // Changed from minHeight to fixed height
+        flexShrink: 0, // Prevent footer from shrinking
+        position: "relative", // Ensure proper positioning context
       }}
     >
-        <div 
-        className="max-w-7xl mx-auto text-center text-sm text-white px-6 pt-4 w-full"
+      <div
+        className="max-w-7xl mx-auto text-center text-sm text-white px-6 w-full"
         style={{
-          // Ensure consistent spacing and fixed height for inner content
-          paddingBottom: '1rem', // Ensure consistent bottom padding
-          minHeight: '280px', // Crucial for reserving space
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center' // Vertically centers content if shorter than minHeight
+          paddingTop: "2rem",
+          paddingBottom: "2rem",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
         }}
       >
         {/* Copyright - fixed height container */}
-        <div className="h-6 mb-6 flex items-center justify-center">
+        <div
+          style={{
+            height: "32px",
+            marginBottom: "24px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <p className="text-base font-medium">{footerContent.copyright}</p>
         </div>
 
-        {/* Paragraphs with fixed heights to prevent shifts */}
-        <div className="space-y-4 mb-2">
+        {/* Paragraphs with fixed heights */}
+        <div style={{ marginBottom: "24px" }}>
           {footerContent.paragraphs.map((paragraph, index) => (
-            // Apply min-h-[30px] to each paragraph for consistent line height/spacing
-            <div 
+            <div
               key={index}
-              className="leading-relaxed min-h-[30px] flex items-center justify-center"
+              style={{
+                minHeight: "60px",
+                marginBottom: index === 0 ? "16px" : "0",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                lineHeight: "1.75",
+              }}
             >
               <p>{paragraph}</p>
             </div>
@@ -56,15 +70,25 @@ const Footer = () => {
         </div>
 
         {/* Navigation links with fixed height container */}
-        <nav 
-          className="flex justify-center items-center space-x-6 flex-wrap gap-2 min-h-[30px]"
-          style={{ marginTop: '0.2rem' }} // Keep this as it's specific spacing
+        <nav
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "0.5rem",
+            minHeight: "40px",
+            marginTop: "8px",
+          }}
         >
           {footerContent.links.map((link, index) => (
-            <a 
+            <a
               key={index}
               href={link.href}
-              className="hover:text-red-400 transition-colors duration-200 px-2 py-1"
+              className="hover:text-red-400 transition-colors duration-200"
+              style={{
+                padding: "0.25rem 0.5rem",
+              }}
             >
               {link.text}
             </a>
@@ -75,4 +99,4 @@ const Footer = () => {
   );
 };
 
-export default memo(Footer); // Using memo for the Footer as well
+export default memo(Footer);

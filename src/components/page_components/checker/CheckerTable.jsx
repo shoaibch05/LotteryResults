@@ -1,8 +1,13 @@
 // components/UniversalCheckerTable.jsx
+import { useAds } from "../../../context/AdProvider";
+import AdBanner from "../../AdBanner";
 import Circle from "./Circle";
 
 const UniversalCheckerTable = ({ userNumbers, results, config }) => {
   const isRowBased = config.isRowBased;
+  const { getAdsFor } = useAds();
+  const adsUnderHeader = getAdsFor("CheckerResult", "underHeader");
+  const adsBottom = getAdsFor("CheckerResult", "bottom");
   const secondaryLabel = config.secondaryBall?.label || "Bonus";
 
   // Render user's selected numbers
@@ -147,6 +152,10 @@ const UniversalCheckerTable = ({ userNumbers, results, config }) => {
           <br />
           The results are shown below with any winning matches highlighted.
         </p>
+
+        {adsUnderHeader.map((a) => (
+          <AdBanner key={a.slot} slot={a.slot} height={120} />
+        ))}
         {renderUserNumbers()}
       </section>
 
@@ -193,6 +202,10 @@ const UniversalCheckerTable = ({ userNumbers, results, config }) => {
           *This is a demonstration. Results checker prizes must be claimed
           within one year of the draw.
         </p>
+
+        {adsBottom.map((a) => (
+          <AdBanner key={a.slot} slot={a.slot} height={120} />
+        ))}
       </section>
     </div>
   );

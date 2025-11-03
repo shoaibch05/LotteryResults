@@ -3,8 +3,14 @@ import { Link, useParams } from "react-router-dom";
 import { useCallback, useEffect } from "react";
 import { useLottery } from "../../../context/LotteryContext";
 import { getLotteryConfig } from "../../../config/lotteryConfig";
+import { useAds } from "../../../context/AdProvider";
+import AdBanner from "../../AdBanner";
 
 export default function LotteryChecker() {
+  const { getAdsFor } = useAds();
+  const adsUnderHeader = getAdsFor("LotteryChecker", "underHeader");
+  const adsBottom = getAdsFor("LotteryChecker", "bottom");
+
   const { slug } = useParams(); // Get lottery type from URL
   const config = getLotteryConfig(slug);
 
@@ -205,6 +211,10 @@ export default function LotteryChecker() {
         <span className="text-sm">{config.selectionText}</span>
       </div>
 
+      {adsUnderHeader.map((a) => (
+        <AdBanner key={a.slot} slot={a.slot} height={120} />
+      ))}
+
       {/* Checker Body */}
       <div className="border border-gray-300 rounded-b-md bg-white p-6 shadow-sm">
         {/* Main Numbers - Row-based or Standard Grid */}
@@ -261,6 +271,10 @@ export default function LotteryChecker() {
         to be able to claim a prize. Prizes must be claimed within one year of
         the draw.
       </p>
+
+      {adsBottom.map((a) => (
+        <AdBanner key={a.slot} slot={a.slot} height={120} />
+      ))}
     </main>
   );
 }

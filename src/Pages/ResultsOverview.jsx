@@ -8,8 +8,16 @@ import { getLotteryBySlug } from "../api/lotteryApi";
 import { formatDate, parseNumbers } from "../utils/utilityfun";
 import { useLocation } from "react-router-dom";
 import dayjs from "dayjs";
+import { useAds } from "../context/AdProvider";
+import AdBanner from "../components/AdBanner";
+import SEO from "../components/SEO";
 
 const ResultsOverview = () => {
+  const { getAdsFor } = useAds();
+  const adsUnderHeader = getAdsFor("ResultOverview", "underHeader");
+
+  const adsBottom = getAdsFor("ResultOverview", "bottom");
+
   const [category, setcategory] = useState(null);
   const [results, setResults] = useState([]);
   const [filteredResults, setFilteredResults] = useState([]);
@@ -44,6 +52,7 @@ const ResultsOverview = () => {
     const fetchdata = async () => {
       try {
         const data = await getAllPostsBycategory(slug);
+        console.log(data);
         const formattedResults = data.map((item) => ({
           id: item.id,
           date: formatDate(item.created_at),
@@ -64,6 +73,12 @@ const ResultsOverview = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
+      <SEO
+        title={`${category.NAME} Results`}
+        description={
+          "Results are shown here shortly after each draw takes place. Make sure you refresh the page to see the very latest result."
+        }
+      />
       {/* Page Header */}
       <ResultsHeader
         title={`${category ? `${category.NAME} Results` : "Results"}`}
@@ -75,6 +90,10 @@ const ResultsOverview = () => {
       {/* Jackpot Banner */}
       <JackpotBanner />
 
+      {adsUnderHeader.map((a) => (
+        <AdBanner key={a.slot} slot={a.slot} height={120} />
+      ))}
+
       {/* Date Range Filter */}
       <DateRangeSelector onFilter={handleFilter} />
 
@@ -83,6 +102,10 @@ const ResultsOverview = () => {
         results={isFiltered ? filteredResults : results}
         hasBonus={true}
       />
+
+      {adsBottom.map((a) => (
+        <AdBanner key={a.slot} slot={a.slot} height={120} />
+      ))}
     </div>
   );
 };

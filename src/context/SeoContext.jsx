@@ -10,6 +10,7 @@ export const SEOProvider = ({ children }) => {
     siteKeywords:
       "lottery, results, winning numbers, jackpot, powerball, mega millions",
     siteLogo: "",
+    siteIcon: "",
     canonicalUrl: "https://lotteryresults.com",
     ogTitle: "Lottery Results Hub - Latest Winning Numbers",
     ogDescription:

@@ -29,7 +29,15 @@ export const getAllPostsBycategory = async (category) => {
   return res.json();
 };
 export const getAllMiddayresultsBycategory = async (category) => {
-  const res = await fetch(`${API_BASE_URL}/posts/midday/lotto`);
+  const res = await fetch(`${API_BASE_URL}/posts/midday/${category}`);
+  if (!res.ok) throw new Error("Failed to fetch post");
+
+  return res.json();
+};
+export const getPrizeBreakDownByPostandDraw = async (postId, draw_type) => {
+  const res = await fetch(
+    `${API_BASE_URL}/prize-breakdowns/${postId}/${draw_type}`
+  );
   if (!res.ok) throw new Error("Failed to fetch post");
 
   return res.json();
@@ -50,6 +58,12 @@ export const getPrizeBreakDownByPost = async (id) => {
   return data;
 };
 export const getAllRecentsPosts = async () => {
+  const res = await fetch(`${API_BASE_URL}/posts/recent`);
+
+  if (!res.ok) throw new Error("Failed to fetch lotteries");
+  return res.json();
+};
+export const getAllposts = async () => {
   const res = await fetch(`${API_BASE_URL}/posts/`);
 
   if (!res.ok) throw new Error("Failed to fetch lotteries");

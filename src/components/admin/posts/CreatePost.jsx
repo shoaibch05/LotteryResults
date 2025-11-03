@@ -117,11 +117,6 @@ const CreatePost = memo(() => {
     setLoading(true);
 
     try {
-      console.log("=== STARTING POST CREATION ===");
-      console.log("Form Data:", formData);
-
-      // 1. Create the main post first
-      console.log("Step 1: Creating main post...");
       const createdPost = await createPost(formData);
       const newPostId = createdPost.id || createdPost.insertId;
 

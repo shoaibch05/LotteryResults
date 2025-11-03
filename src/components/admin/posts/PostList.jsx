@@ -1,18 +1,22 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import Popup from "reactjs-popup";
-import { getAllRecentsPosts } from "../../../api/postApi";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { getAllposts, getAllRecentsPosts } from "../../../api/postApi";
 
 const PostList = memo(() => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [deleteMessage, setDeleteMessage] = useState("");
-  const [deleteMessageType, setDeleteMessageType] = useState(""); // 'success' or 'error'
+  const [deleteMessageType, setDeleteMessageType] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     async function getPost() {
       try {
-        const data = await getAllRecentsPosts();
+        const data = await getAllposts();
         setPosts(data);
       } catch (error) {
         console.error("Error fetching posts:", error);
@@ -20,9 +24,6 @@ const PostList = memo(() => {
     }
     getPost();
   }, []);
-
-  const [filter, setFilter] = useState("all");
-  const [searchTerm, setSearchTerm] = useState("");
 
   const getStatusBadge = (status) => {
     const statusClasses = {
@@ -47,7 +48,7 @@ const PostList = memo(() => {
     });
   };
 
-  const handleDelete = async (postId, close) => {
+  const handleDelete = async (postId) => {
     setLoading(true);
     try {
       const response = await fetch(
@@ -66,9 +67,6 @@ const PostList = memo(() => {
         setDeleteMessage("✅ Post deleted successfully!");
         setDeleteMessageType("success");
 
-        // Close popup
-        if (close) close();
-
         // Clear message after 3 seconds
         setTimeout(() => setDeleteMessage(""), 3000);
       } else {
@@ -85,13 +83,70 @@ const PostList = memo(() => {
     }
   };
 
-  const filteredPosts = posts.filter((post) => {
-    const matchesFilter = filter === "all" || post.status === filter;
-    const matchesSearch =
-      post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post.category.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
+  const filteredPosts = useMemo(() => {
+    return posts.filter((post) => {
+      const matchesFilter = filter === "all" || post.status === filter;
+      const matchesSearch =
+        post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        post.category.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesFilter && matchesSearch;
+    });
+  }, [posts, filter, searchTerm]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter, searchTerm]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredPosts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentPosts = useMemo(
+    () => filteredPosts.slice(startIndex, endIndex),
+    [filteredPosts, startIndex, endIndex]
+  );
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisible = 5;
+
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        pages.push(1, 2, 3, 4, "...", totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(
+          1,
+          "...",
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+          totalPages
+        );
+      } else {
+        pages.push(
+          1,
+          "...",
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          "...",
+          totalPages
+        );
+      }
+    }
+    return pages;
+  };
 
   return (
     <div className="space-y-6">
@@ -151,6 +206,15 @@ const PostList = memo(() => {
             </select>
           </div>
         </div>
+
+        {/* Results Counter */}
+        {filteredPosts.length > 0 && (
+          <div className="mt-3 text-sm text-gray-600">
+            Showing {startIndex + 1} to{" "}
+            {Math.min(endIndex, filteredPosts.length)} of {filteredPosts.length}{" "}
+            posts
+          </div>
+        )}
       </div>
 
       {/* Posts Table */}
@@ -180,7 +244,7 @@ const PostList = memo(() => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredPosts.map((post) => (
+              {currentPosts.map((post) => (
                 <tr key={post.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
@@ -209,45 +273,21 @@ const PostList = memo(() => {
                       >
                         Edit
                       </Link>
-                      <Popup
-                        trigger={
-                          <button className="text-red-600 hover:text-red-700">
-                            Delete
-                          </button>
-                        }
-                        modal
+                      <button
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              `Delete "${post.title}"? This action cannot be undone.`
+                            )
+                          ) {
+                            handleDelete(post.id);
+                          }
+                        }}
+                        disabled={loading}
+                        className="text-red-600 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {(close) => (
-                          <div className="p-6 bg-white rounded-lg shadow-lg max-w-sm">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                              Delete Post
-                            </h3>
-                            <p className="text-gray-600 mb-6">
-                              Are you sure you want to delete "{post.title}"?
-                              This action cannot be undone.
-                            </p>
-                            <div className="flex justify-end gap-3">
-                              <button
-                                onClick={close}
-                                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
-                              >
-                                Cancel
-                              </button>
-                              <button
-                                onClick={() => handleDelete(post.id, close)}
-                                disabled={loading}
-                                className={`px-4 py-2 rounded-lg text-white transition-colors ${
-                                  loading
-                                    ? "bg-red-400 cursor-not-allowed"
-                                    : "bg-red-600 hover:bg-red-700"
-                                }`}
-                              >
-                                {loading ? "Deleting..." : "Delete"}
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </Popup>
+                        Delete
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -262,6 +302,57 @@ const PostList = memo(() => {
           </div>
         )}
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 pb-4">
+          {/* Previous Button */}
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="p-2 rounded-lg border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
+            aria-label="Previous page"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+
+          {/* Page Numbers */}
+          <div className="flex gap-1">
+            {getPageNumbers().map((page, idx) =>
+              page === "..." ? (
+                <span
+                  key={`ellipsis-${idx}`}
+                  className="px-3 py-2 text-gray-500"
+                >
+                  ...
+                </span>
+              ) : (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  className={`px-4 py-2 rounded-lg border transition-colors ${
+                    currentPage === page
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : "border-gray-300 hover:bg-gray-100"
+                  }`}
+                >
+                  {page}
+                </button>
+              )
+            )}
+          </div>
+
+          {/* Next Button */}
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="p-2 rounded-lg border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
+            aria-label="Next page"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+      )}
     </div>
   );
 });

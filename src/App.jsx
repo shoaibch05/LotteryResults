@@ -9,12 +9,15 @@ import { RoleProvider } from "./context/RoleContext";
 import { SEOProvider } from "./context/SeoContext";
 // Route components
 import PublicRoutes from "./routes/PublicRoutes";
-import AdminRoutes from "./routes/AdminRoutes";
+// import AdminRoutes from "./routes/AdminRoutes";
 import SEO from "./components/SEO";
 
 // Lazy load admin login page
 const AdminLogin = lazy(() =>
   import(/* webpackChunkName: "admin-login" */ "./Pages/admin/Login")
+);
+const AdminRoutes = lazy(() =>
+  import(/* webpackChunkName: "admin-routes" */ "./routes/AdminRoutes")
 );
 
 // Better loading component

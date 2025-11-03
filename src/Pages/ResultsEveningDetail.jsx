@@ -5,20 +5,22 @@ import NumbersDisplay from "../components/page_components/NumberDisplay";
 import PrizeBreakdownTable from "../components/page_components/PrizeBreakDown";
 import ResultDetailHeader from "../components/page_components/ResultDetailHeader";
 import JackpotBanner from "../components/page_components/JackpotBanner";
-import { getPostById, getPrizeBreakDownByPost } from "../api/postApi";
+import { getPostById, getPrizeBreakDownByPostandDraw } from "../api/postApi";
 import { useEffect, useState } from "react";
 import { formatDate } from "../utils/utilityfun";
 import { useParams } from "react-router-dom";
 import SEO from "../components/SEO";
-import { useAds } from "../context/AdProvider";
 import AdBanner from "../components/AdBanner";
+import { useAds } from "../context/AdProvider";
 
-const LotteryResultsPage = () => {
-  const { id } = useParams();
+const ResultsEveningDetail = () => {
   const { getAdsFor } = useAds();
-  const adsUnderHeader = getAdsFor("ResultDetail", "underHeader");
-  const adsUnderGameCards = getAdsFor("ResultDetail", "underGameCards");
-  const adsBottom = getAdsFor("ResultDetail", "bottom");
+  const adsUnderHeader = getAdsFor("EveningDetail", "underHeader");
+
+  const adsBottom = getAdsFor("EveningDetail", "bottom");
+
+  const { id } = useParams();
+  const draw = "Evening";
   const [middayBreakdown, setMiddayBreakdown] = useState([]);
   const [eveningBreakdown, setEveningBreakdown] = useState([]);
   const [postData, setPostData] = useState(null); // Initialize as null, not undefined
@@ -28,7 +30,7 @@ const LotteryResultsPage = () => {
   useEffect(() => {
     const fetchBreakdowns = async () => {
       try {
-        const data = await getPrizeBreakDownByPost(id);
+        const data = await getPrizeBreakDownByPostandDraw(id, draw);
         const resultDetails = await getPostById(id);
 
         setPostData(resultDetails);
@@ -127,10 +129,10 @@ const LotteryResultsPage = () => {
           title={postData?.title}
           description={postData?.content}
         />
+
         {adsUnderHeader.map((a) => (
           <AdBanner key={a.slot} slot={a.slot} height={120} />
         ))}
-
         {/* Numbers Section */}
         <div>
           <div className="bg-blue-950 text-white px-4 rounded-t">
@@ -139,22 +141,14 @@ const LotteryResultsPage = () => {
             </h2>
           </div>
 
-          <div className="flex flex-col md:flex-row mb-8">
+          <div className="flex flex-col md:flex-row w-full justify-center mb-8">
             <NumbersDisplay
               title="Midday"
               numbers={postData?.Midday_Winnings}
               winners={totals.midday}
             />
-            <NumbersDisplay
-              title="Evening"
-              numbers={postData?.Evening_Winnings}
-              winners={totals.evening}
-            />
           </div>
         </div>
-        {adsUnderGameCards.map((a) => (
-          <AdBanner key={a.slot} slot={a.slot} height={120} />
-        ))}
 
         <JackpotBanner
           title="Next Jackpot"
@@ -164,18 +158,14 @@ const LotteryResultsPage = () => {
         />
 
         {/* Prize Breakdown Section */}
-        <div className="flex flex-col md:flex-row gap-6">
+        <div className="flex flex-col md:flex-row w-full justify-center gap-6">
           <PrizeBreakdownTable
             title="Midday"
             data={middayBreakdown}
             totals={totals.midday}
           />
-          <PrizeBreakdownTable
-            title="Evening"
-            data={eveningBreakdown}
-            totals={totals.evening}
-          />
         </div>
+
         {adsBottom.map((a) => (
           <AdBanner key={a.slot} slot={a.slot} height={120} />
         ))}
@@ -184,4 +174,4 @@ const LotteryResultsPage = () => {
   );
 };
 
-export default LotteryResultsPage;
+export default ResultsEveningDetail;

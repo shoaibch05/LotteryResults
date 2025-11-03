@@ -13,7 +13,7 @@ const LotteryHistory = ({ history = [] }) => {
 
   return (
     <section
-      className="bg-white shadow-md rounded-lg p-6 mb-8"
+      className="bg-white shadow-md rounded-lg p-6 mb-8 min-h-64"
       style={{
         contain: "layout", // Helps isolate layout calculations for this section
       }}

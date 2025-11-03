@@ -1,11 +1,10 @@
 // src/components/SEO.jsx
-import { Helmet } from "react-helmet";
-import PropTypes from "prop-types";
 import { useContext } from "react";
+import PropTypes from "prop-types";
 import { SEOContext } from "../context/SeoContext";
 
 /**
- * SEO Component - Dynamic Meta Tags
+ * SEO Component - Dynamic Meta Tags using React 19 native support
  *
  * Usage:
  * <SEO
@@ -35,7 +34,7 @@ const SEO = ({
   // Use context values or fall back to defaults
   const siteTitle = seoSettings?.siteTitle || "Lottery Results Hub";
   const siteName = seoSettings?.siteTitle || "Lottery Results Hub";
-  const siteLogo = seoSettings?.siteLogo || "";
+  const siteLogo = seoSettings?.siteIcon || "";
   const twitterHandle = seoSettings?.twitterSite || "@lotteryresults";
   const defaultDescription =
     seoSettings?.siteDescription ||
@@ -58,18 +57,23 @@ const SEO = ({
   const canonicalUrl = canonical || window.location.href;
 
   return (
-    <Helmet>
+    <>
+      {/* Basic Meta Tags */}
       <title>{fullTitle}</title>
       <meta name="description" content={description || defaultDescription} />
-      <meta name="keywords" content={keywords || defaultKeywords} />
+      {keywords && <meta name="keywords" content={keywords} />}
       {author && <meta name="author" content={author} />}
       <link rel="canonical" href={canonicalUrl} />
       {noindex && <meta name="robots" content="noindex,nofollow" />}
 
       {/* Favicon / Icon - From Database */}
-      {siteLogo && <link rel="icon" href={siteLogo} />}
-      {siteLogo && <link rel="shortcut icon" href={siteLogo} />}
-      {siteLogo && <link rel="apple-touch-icon" href={siteLogo} />}
+      {siteLogo && (
+        <>
+          <link rel="icon" href={siteLogo} />
+          <link rel="shortcut icon" href={siteLogo} />
+          <link rel="apple-touch-icon" href={siteLogo} />
+        </>
+      )}
 
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={type} />
@@ -107,7 +111,7 @@ const SEO = ({
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
       <meta name="language" content="English" />
-    </Helmet>
+    </>
   );
 };
 

@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import viteCompression from "vite-plugin-compression";
+import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig({
   plugins: [
@@ -27,6 +28,12 @@ export default defineConfig({
       },
     }),
     viteCompression({ algorithm: "brotliCompress" }),
+    visualizer({
+      open: true,
+      gzipSize: true,
+      brotliSize: true,
+      filename: "dist/stats.html",
+    }),
   ],
   base: "/",
   build: {
@@ -49,11 +56,20 @@ export default defineConfig({
             if (id.includes("/posts/")) return "admin-posts";
             if (id.includes("/users/")) return "admin-users";
             if (id.includes("/seo/")) return "admin-seo";
+            if (id.includes("/routes/AdminRoutes")) return "admin-routes";
             return "admin";
           }
-          // Context and utilities
-          if (id.includes("/context/")) return "admin-context";
-          if (id.includes("/utils/")) return "admin-utils";
+          // Public pages chunks
+          if (id.includes("/Pages/")) {
+            if (id.includes("/admin/")) return "admin-pages";
+            return "pages";
+          }
+
+          // Components chunks
+          if (id.includes("/components/")) {
+            if (id.includes("page_components")) return "page-components";
+            return "components";
+          }
         },
       },
     },
