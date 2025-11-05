@@ -36,9 +36,28 @@ export const getLotterybyName = async (req, res) => {
 };
 
 export const addLottery = async (req, res) => {
-  const { name, description, draw_date } = req.body;
+  const {
+    NAME,
+    slug,
+    History,
+    How_To_Play,
+    Winners,
+    description,
+    draw_days,
+    draw_time,
+  } = req.body;
+
   try {
-    const newLottery = await createLottery(name, description, draw_date);
+    const newLottery = await createLottery(
+      NAME,
+      slug,
+      History,
+      How_To_Play,
+      Winners,
+      description,
+      draw_days,
+      draw_time
+    );
     res.status(201).json(newLottery);
   } catch (err) {
     res.status(500).json({ error: err.message });

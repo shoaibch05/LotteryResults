@@ -4,12 +4,22 @@ import {
   deletePrizeBreakdowns,
   updatePrizeBreakdown,
   deletePrizeBreakdown,
+  getPrizeBreakdownsByPostAndDraw,
 } from "../models/prizeBreakModel.js";
 
 export const getPrizeBreakdowns = async (req, res) => {
   try {
     const { postId } = req.params;
     const data = await getPrizeBreakdownsByPost(postId);
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+export const getPrizeBreakdownsbyDraw = async (req, res) => {
+  try {
+    const { postId, draw_type } = req.params;
+    const data = await getPrizeBreakdownsByPostAndDraw(postId, draw_type);
     res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });

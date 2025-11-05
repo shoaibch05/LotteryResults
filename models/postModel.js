@@ -3,7 +3,18 @@ import db from "../config/db.js";
 export const getAllPosts = () => {
   return new Promise((resolve, reject) => {
     db.query(
-      "SELECT id, title, status, content, category, Date(created_at) AS date FROM `posts` ORDER BY created_at DESC LIMIT 10;",
+      "SELECT id, title, status, content, category, Date(created_at) AS date FROM `posts` ORDER BY created_at DESC;",
+      (err, results) => {
+        if (err) reject(err);
+        else resolve(results);
+      }
+    );
+  });
+};
+export const getLatestPosts = () => {
+  return new Promise((resolve, reject) => {
+    db.query(
+      "SELECT id, title, status, content, category, Date(created_at) AS date FROM `posts` ORDER BY created_at DESC LIMIT 5;",
       (err, results) => {
         if (err) reject(err);
         else resolve(results);
@@ -44,11 +55,7 @@ export const getAllMiddayLatestresultssbycategory = (category) => {
       (err, results) => {
         if (err) reject(err);
         else {
-          const Post = results[0];
-          resolve({
-            ...Post,
-            Midday_Winnings: parseValue(Post.Midday_Winnings),
-          });
+          resolve(results);
         }
       }
     );
@@ -63,11 +70,7 @@ export const getAllEveningLatestresultssbycategory = (category) => {
       (err, results) => {
         if (err) reject(err);
         else {
-          const Post = results[0];
-          resolve({
-            ...Post,
-            Evening_Winnings: parseValue(Post.Evening_Winnings),
-          });
+          resolve(results);
         }
       }
     );
@@ -165,6 +168,25 @@ export const getPostById = (id) => {
         });
       }
     });
+  });
+};
+export const getPostByCategoryAndDate = (date, category) => {
+  return new Promise((resolve, reject) => {
+    db.query(
+      "SELECT * FROM posts WHERE created_at = ? AND category = ? ",
+      [date, category],
+      (err, results) => {
+        if (err) reject(err);
+        else {
+          const Post = results[0];
+          resolve({
+            ...Post,
+            Midday_Winnings: parseValue(Post.Midday_Winnings),
+            Evening_Winnings: parseValue(Post.Evening_Winnings),
+          });
+        }
+      }
+    );
   });
 };
 

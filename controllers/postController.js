@@ -11,6 +11,8 @@ import {
   getAllLatestpostsbycategory,
   getAllMiddayLatestresultssbycategory,
   getAllEveningLatestresultssbycategory,
+  getLatestPosts,
+  getPostByCategoryAndDate,
 } from "../models/postModel.js";
 import { getAllSubscribers } from "../models/subscriberModel.js";
 import { sendPostNotificationEmails } from "../utils/emailService.js";
@@ -19,6 +21,14 @@ import { addPostToSitemap } from "../utils/sitemapService.js";
 export const getPosts = async (req, res) => {
   try {
     const posts = await getAllPosts();
+    res.json(posts);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+export const getlatestposts = async (req, res) => {
+  try {
+    const posts = await getLatestPosts();
     res.json(posts);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -100,6 +110,16 @@ export const getSinglePost = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+export const getSinglePostbyCatAndDte = async (req, res) => {
+  const { date, category } = req.params;
+  try {
+    const post = await getPostByCategoryAndDate(date, category);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+    res.json(post);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 export const getallmiddaybycat = async (req, res) => {
   try {
     const post = await getAllMiddayLatestresultssbycategory(
@@ -137,10 +157,6 @@ export const addPost = async (req, res) => {
   } = req.body;
 
   try {
-    console.log("\n═══════════════════════════════════");
-    console.log("🚀 CREATING NEW POST");
-    console.log("═══════════════════════════════════\n");
-
     // ✅ Step 1: Create post in database (MUST succeed)
     console.log("📝 Step 1: Creating post in database...");
     const newPost = await createPost(
@@ -205,17 +221,11 @@ export const addPost = async (req, res) => {
       console.error("🗺️  Sitemap update error:", error.message);
     });
 
-    // ✅ Step 4: Return immediate success response
-    console.log("═══════════════════════════════════");
-    console.log("✓ POST CREATED SUCCESSFULLY");
-    console.log("  Background tasks running...");
-    console.log("═══════════════════════════════════\n");
-
     res.status(201).json({
       success: true,
       message:
         "Post created successfully! Email notifications and sitemap update in progress.",
-      postId: postId,
+      id: postId,
       postUrl: postUrl,
     });
   } catch (err) {

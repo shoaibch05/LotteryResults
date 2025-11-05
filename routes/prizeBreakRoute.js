@@ -5,11 +5,13 @@ import {
   deletePrizeBreakdownByPost,
   editPrizeBreakdown,
   deleteSinglePrizeBreakdown,
+  getPrizeBreakdownsbyDraw,
 } from "../controllers/prizeBreakdown.js";
 
 const router = express.Router();
 
 router.get("/:postId", getPrizeBreakdowns);
+router.get("/:postId/:draw_type", getPrizeBreakdownsbyDraw);
 //new row
 router.post("/", createPrizeBreakdown);
 router.delete("/post/:postId", deletePrizeBreakdownByPost);

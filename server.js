@@ -22,6 +22,7 @@ import winnerRoutes from "./routes/winnerRoutes.js";
 import prizeBreakdown from "./routes/prizeBreakRoute.js";
 import { testEmailConfig } from "./utils/emailService.js";
 import Jackpotroutes from "./routes/jackpotRoutes.js";
+import siteRoutes from "./routes/siteRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -43,6 +44,8 @@ app.use("/api/pages", pageRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/prize-breakdowns", prizeBreakdown);
 app.use("/api/jackpot", Jackpotroutes);
+app.use("/api/site", siteRoutes);
+
 app.use("/api/seo", seoRoutes);
 app.use("/api/subscriber", subscriptionRoutes);
 app.use("/api/winners", winnerRoutes);

@@ -33,6 +33,39 @@ export const getPrizeBreakdownsByPost = (postId) => {
     );
   });
 };
+export const getPrizeBreakdownsByPostAndDraw = (postId, draw_type) => {
+  return new Promise((resolve, reject) => {
+    // 1️⃣ First query: get all prize breakdown rows
+    db.query(
+      "SELECT * FROM prize_breakdowns WHERE post_id = ? AND draw_type = ?",
+      [postId, draw_type],
+      (err, prizeRows) => {
+        if (err) return reject(err);
+
+        // 2️⃣ Second query: get totals per draw type
+        db.query(
+          `SELECT draw_type, SUM(winners) AS total
+           FROM prize_breakdowns
+           WHERE post_id = ? AND draw_type = ?
+           GROUP BY draw_type`,
+          [postId, draw_type],
+          (err2, totals) => {
+            if (err2) return reject(err2);
+
+            // 3️⃣ Combine both results
+            resolve({
+              prizes: prizeRows,
+              totals: totals.reduce((acc, row) => {
+                acc[row.draw_type] = row.total;
+                return acc;
+              }, {}), // → { midday: 1200, evening: 1300 }
+            });
+          }
+        );
+      }
+    );
+  });
+};
 
 // Add a new prize breakdown row
 export const addPrizeBreakdown = (data) => {

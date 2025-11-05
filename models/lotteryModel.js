@@ -69,11 +69,36 @@ export const updateLotteryById = (id, fields) => {
   });
 };
 
-export const createLottery = (name, description, draw_date) => {
+export const createLottery = (
+  name,
+  slug,
+  history,
+  How_To_Play,
+  Winners,
+  description,
+  draw_days,
+  draw_time
+) => {
   return new Promise((resolve, reject) => {
+    const parsedHowToPlay = Array.isArray(How_To_Play)
+      ? JSON.stringify(How_To_Play)
+      : How_To_Play;
+    const parsedWinners = Array.isArray(Winners)
+      ? JSON.stringify(Winners)
+      : Winners;
+
     db.query(
-      "INSERT INTO lotteries (name, description, draw_date) VALUES (?, ?, ?)",
-      [name, description, draw_date],
+      "INSERT INTO `lotteries`(`NAME`, `slug`, `description`, `History`, `How_To_Play`, `Winners`, `draw_days`, `draw_time`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      [
+        name,
+        slug,
+        description,
+        history,
+        parsedHowToPlay,
+        parsedWinners,
+        draw_days,
+        draw_time,
+      ],
       (err, result) => {
         if (err) reject(err);
         else resolve({ id: result.insertId });
