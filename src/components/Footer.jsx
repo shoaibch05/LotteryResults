@@ -18,10 +18,10 @@ const Footer = () => {
 
   return (
     <footer
-      className="border-t border-gray-200 w-full"
+      className="border-t sm:h-108 border-gray-200 w-full"
       style={{
         backgroundColor: "var(--color-brand-gray)",
-        height: "320px", // Changed from minHeight to fixed height
+
         flexShrink: 0, // Prevent footer from shrinking
         position: "relative", // Ensure proper positioning context
       }}

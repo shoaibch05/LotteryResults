@@ -71,6 +71,7 @@ const navItems = [
     borderColor: "border-purple-600",
     links: [
       { name: "PowerBall info", url: "/powerball/info" },
+      { name: "Results", url: "/powerball/results" },
       { name: "Midday Results", url: "/powerball/midday" },
       { name: "Evening Results", url: "/powerball/evening" },
       { name: "Hot Numbers", url: "/powerball/HotNumbers" },
@@ -99,7 +100,9 @@ const navItems = [
         links: [
           { name: "Quick Draw Results", url: "/quickdraw/results" },
           { name: "Quick Draw Information", url: "/quickdraw/info" },
-          { name: "Past Winning Numbers", url: "/quickdraw/past" },
+          { name: "Midday Results", url: "/quickdraw/midday" },
+          { name: "Evening Results", url: "/quickdraw/evening" },
+          { name: "Hot Numbers", url: "/quickdraw/HotNumbers" },
         ],
         borderColor: "border-pink-500",
       },
@@ -109,7 +112,9 @@ const navItems = [
         links: [
           { name: "Pick 10 Results", url: "/pick10/results" },
           { name: "Pick 10 Information", url: "/pick10/info" },
-          { name: "Pick 10 Checker", url: "/pick10/checker" },
+          { name: "Midday Results", url: "/pick10/midday" },
+          { name: "Evening Results", url: "/pick10/evening" },
+          { name: "Pick 10 Checker", url: "/pick10/HotNumbers" },
         ],
         borderColor: "border-orange-400",
       },
@@ -119,7 +124,9 @@ const navItems = [
         links: [
           { name: "Cash 4 Life Results", url: "/cash4life/results" },
           { name: "Cash 4 Life Information", url: "/cash4life/info" },
-          { name: "Cash4Life Checker", url: "/cash4life/checker" },
+          { name: "Midday Results", url: "/cash4life/midday" },
+          { name: "Evening Results", url: "/cash4life/evening" },
+          { name: "Cash4Life Checker", url: "/cash4life/HotNumbers" },
         ],
         borderColor: "border-green-500",
       },
@@ -143,6 +150,44 @@ export default function Header({ headerbgColor = "bg-white" }) {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [logo, setlogo] = useState("http://localhost:5173/vite.svg");
+  // Add these inside Header()
+  const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    // Remove previous highlights
+    const oldMarks = document.querySelectorAll("mark.page-highlight");
+    oldMarks.forEach((mark) => {
+      const parent = mark.parentNode;
+      parent.replaceChild(document.createTextNode(mark.textContent), mark);
+      parent.normalize();
+    });
+
+    if (!query.trim()) return;
+
+    const regex = new RegExp(`(${query})`, "gi");
+    const content = document.querySelector("main") || document.body;
+    const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+
+    nodes.forEach((node) => {
+      const text = node.textContent;
+      if (regex.test(text)) {
+        const frag = document.createDocumentFragment();
+        text.split(regex).forEach((part) => {
+          if (regex.test(part)) {
+            const mark = document.createElement("mark");
+            mark.className = "page-highlight bg-yellow-300 text-black";
+            mark.textContent = part;
+            frag.appendChild(mark);
+          } else frag.appendChild(document.createTextNode(part));
+        });
+        node.parentNode.replaceChild(frag, node);
+      }
+    });
+  }, [query]);
+
   useEffect(() => {
     const fetchlogo = async () => {
       try {
@@ -159,9 +204,6 @@ export default function Header({ headerbgColor = "bg-white" }) {
     };
     fetchlogo();
   }, []);
-  if (logo) {
-    console.log("the logo is ", logo);
-  }
 
   // Close mobile menu when route changes
   const handleLinkClick = () => {
@@ -284,6 +326,8 @@ export default function Header({ headerbgColor = "bg-white" }) {
           <input
             type="text"
             placeholder="Search..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
             className="px-3 py-1 rounded bg-white text-black border-2"
           />
         </div>
@@ -409,6 +453,8 @@ export default function Header({ headerbgColor = "bg-white" }) {
               <input
                 type="text"
                 placeholder="Search..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
                 className="w-full px-4 py-2 rounded bg-white text-black border-2"
               />
             </div>

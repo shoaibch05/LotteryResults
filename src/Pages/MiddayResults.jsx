@@ -51,12 +51,10 @@ const MiddayResults = () => {
     const fetchData = async () => {
       try {
         const data = await getAllMiddayresultsBycategory(slug);
-        console.log(data);
         const formattedResults = data.map((item) => ({
           id: item.id,
           date: formatDate(item.created_at),
           midday: parseNumbers(item.Midday_Winnings),
-          evening: parseNumbers(item.Evening_Winnings),
         }));
 
         setResults(formattedResults);

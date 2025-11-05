@@ -9,7 +9,7 @@ const DateRangeSelector = ({ onFilter }) => {
     // or call a parent function here: onFilter(fromDate, toDate);
   };
   return (
-    <div className="bg-blue-600 text-white p-4 rounded-lg flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4 mb-6">
+    <div className="bg-blue-600 sm:h-36 text-white p-4 rounded-lg flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4 mb-6">
       <div className="flex items-center space-x-2">
         <span>From:</span>
         <input

@@ -16,6 +16,13 @@ export const getPostById = async (id) => {
 
   return response.json(); // ✅ await here
 };
+export const getPostbyCategory_And_Date = async (date, category) => {
+  const response = await fetch(`${API_BASE_URL}/posts/${date}/${category}`);
+
+  if (!response.ok) throw new Error("Failed to fetch post");
+
+  return response.json(); // ✅ await here
+};
 export const getPostBycategory = async (category) => {
   const res = await fetch(`${API_BASE_URL}/posts/${category}`);
   if (!res.ok) throw new Error("Failed to fetch post");

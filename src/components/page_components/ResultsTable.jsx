@@ -104,7 +104,7 @@ const ResultsTable = ({ results, hasBonus = false, itemsPerPage = 10 }) => {
                   {/* Date */}
                   <td className="py-3 px-4 font-medium text-blue-600 text-center">
                     <Link
-                      to={`${row.id}/${dayjs(row.date).format("YYYY-MM-DD")}`}
+                      to={`${dayjs(row.date).format("YYYY-MM-DD")}`}
                       className="hover:underline"
                     >
                       {row.date}
@@ -113,7 +113,7 @@ const ResultsTable = ({ results, hasBonus = false, itemsPerPage = 10 }) => {
 
                   {/* Midday */}
                   {showMidday && (
-                    <td className="py-3 px-4 max-w-[150px] break-words">
+                    <td className="py-3 px-4 max-w-[150px] wrap-break-word">
                       {row.midday?.numbers?.length > 0 ? (
                         <div className="flex flex-wrap space-x-2 space-y-2 justify-center">
                           {row.midday.numbers.map((num, i) => (
@@ -138,7 +138,7 @@ const ResultsTable = ({ results, hasBonus = false, itemsPerPage = 10 }) => {
 
                   {/* Evening */}
                   {showEvening && (
-                    <td className="py-3 px-4 max-w-[150px] break-words">
+                    <td className="py-3 px-4 max-w-[150px] wrap-break-word">
                       {row.evening?.numbers?.length > 0 ? (
                         <div className="flex flex-wrap space-y-2 space-x-2 justify-center">
                           {row.evening.numbers.map((num, i) => (

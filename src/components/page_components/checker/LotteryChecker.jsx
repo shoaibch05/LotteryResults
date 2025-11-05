@@ -100,14 +100,12 @@ export default function LotteryChecker() {
               <h3 className="text-sm font-medium text-gray-700 mb-2 text-center">
                 Position {rowIndex + 1}
               </h3>
-              <div
-                className={`grid grid-cols-${config.mainNumbers.gridCols} gap-2 justify-items-center`}
-              >
+              <div className={`grid grid-cols-10 gap-2 justify-items-center`}>
                 {numbers.map((num) => (
                   <button
                     key={num}
                     onClick={() => toggleRowNumber(rowIndex, num)}
-                    className={`w-full h-10 flex items-center justify-center rounded-md border text-sm font-medium transition
+                    className={`md:w-full h-10 w-5.5 flex items-center justify-center rounded-md border text-sm font-medium transition
                       ${
                         selectedRows[rowIndex] === num
                           ? config.mainNumbers.selectedColor
@@ -143,7 +141,7 @@ export default function LotteryChecker() {
             <button
               key={num}
               onClick={() => toggleMain(num)}
-              className={`w-full h-10 flex items-center justify-center rounded-md border text-sm font-medium transition
+              className={`md:w-full w-5.5 h-10 flex items-center justify-center rounded-md border text-sm font-medium transition
                 ${
                   selectedMain.includes(num)
                     ? config.mainNumbers.selectedColor

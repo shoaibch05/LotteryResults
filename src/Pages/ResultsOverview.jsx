@@ -74,7 +74,7 @@ const ResultsOverview = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <SEO
-        title={`${category.NAME} Results`}
+        title={`${category?.NAME} Results`}
         description={
           "Results are shown here shortly after each draw takes place. Make sure you refresh the page to see the very latest result."
         }

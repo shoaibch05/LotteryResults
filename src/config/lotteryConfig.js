@@ -172,6 +172,26 @@ export const lotteryConfigs = {
     headerColor: "bg-orange-600",
     selectionText: "Select 1 Number from Each Position",
   },
+  quickdraw: {
+    id: "quickdraw",
+    name: "Quick Draw",
+    displayName: "New York Quick Draw Results Checker",
+    description:
+      "Check your Quick Draw numbers here to see if you've won a prize from previous draws. Select one number from each of the four positions below (0-9).",
+
+    mainNumbers: {
+      label: "Quick Draw Numbers",
+
+      min: 0,
+      max: 49,
+      gridCols: 10,
+      selectedColor: "bg-orange-600 text-white border-orange-700",
+    },
+    secondaryBall: null,
+    hasMultiplier: false,
+    headerColor: "bg-orange-600",
+    selectionText: "Select 1 Number from Each Position",
+  },
 
   Numbers: {
     id: "numbers",

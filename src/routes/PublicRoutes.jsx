@@ -83,18 +83,15 @@ const PublicRoutes = memo(() => {
               <Route path="/:slug" element={<LotteryPage />} />
               <Route path="/:slug/info" element={<LotteryPage />} />
               <Route path="/:slug/results" element={<ResultsOverview />} />
-              <Route
-                path="/:slug/results/:id/:date"
-                element={<ResultDetail />}
-              />
+              <Route path="/:slug/results/:date" element={<ResultDetail />} />
               <Route path="/:slug/midday" element={<MiddayResults />} />
               <Route
-                path="/:slug/midday/:id/:date"
+                path="/:slug/midday/:date"
                 element={<ResultsMiddayDetail />}
               />
               <Route path="/:slug/evening" element={<EveningResults />} />
               <Route
-                path="/:slug/evening/:id/:date"
+                path="/:slug/evening/:date"
                 element={<ResultsEveningDetail />}
               />
               <Route path="/:slug/HotNumbers" element={<LotteryChecker />} />

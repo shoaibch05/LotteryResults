@@ -5,20 +5,24 @@ import NumbersDisplay from "../components/page_components/NumberDisplay";
 import PrizeBreakdownTable from "../components/page_components/PrizeBreakDown";
 import ResultDetailHeader from "../components/page_components/ResultDetailHeader";
 import JackpotBanner from "../components/page_components/JackpotBanner";
-import { getPostById, getPrizeBreakDownByPostandDraw } from "../api/postApi";
+import {
+  getPostbyCategory_And_Date,
+  getPostById,
+  getPrizeBreakDownByPostandDraw,
+} from "../api/postApi";
 import { useEffect, useState } from "react";
 import { formatDate } from "../utils/utilityfun";
 import { useParams } from "react-router-dom";
+
 import SEO from "../components/SEO";
 import { useAds } from "../context/AdProvider";
 import AdBanner from "../components/AdBanner";
 
 const ResultsMiddayDetail = () => {
+  const { slug, date } = useParams();
   const { getAdsFor } = useAds();
   const adsUnderHeader = getAdsFor("MiddayDetail", "underHeader");
   const adsBottom = getAdsFor("MiddayDetail", "bottom");
-
-  const { id } = useParams();
   const draw = "Midday";
   const [middayBreakdown, setMiddayBreakdown] = useState([]);
   const [eveningBreakdown, setEveningBreakdown] = useState([]);
@@ -27,14 +31,26 @@ const ResultsMiddayDetail = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true; // flag to prevent state updates if unmounted
+
     const fetchBreakdowns = async () => {
       try {
-        const data = await getPrizeBreakDownByPostandDraw(id, draw);
-        const resultDetails = await getPostById(id);
+        setLoading(true);
+
+        const resultDetails = await getPostbyCategory_And_Date(date, slug);
+        if (!isMounted) return; // stop if unmounted
 
         setPostData(resultDetails);
 
-        // Separate data for each draw type
+        const id = resultDetails?.id;
+        if (!id) {
+          console.error("No ID found in result details");
+          return;
+        }
+
+        const data = await getPrizeBreakDownByPostandDraw(id);
+        if (!isMounted) return; // stop if unmounted
+
         const midday = data.prizes.filter((p) => p.draw_type === "midday");
         const evening = data.prizes.filter((p) => p.draw_type === "evening");
 
@@ -42,14 +58,21 @@ const ResultsMiddayDetail = () => {
         setEveningBreakdown(evening);
         setTotals(data.totals);
       } catch (err) {
-        console.error("Error fetching prize breakdowns:", err);
+        if (isMounted) {
+          console.error("Error fetching prize breakdowns:", err);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     fetchBreakdowns();
-  }, [id]);
+
+    // cleanup runs when component unmounts or dependencies change
+    return () => {
+      isMounted = false;
+    };
+  }, [date, slug]);
 
   // Only construct SEO data AFTER postData is loaded
   const seoData = postData

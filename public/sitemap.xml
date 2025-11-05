@@ -30,4 +30,10 @@
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>http://localhost:3000/lotto/results/2025-11-04</loc>
+    <lastmod>2025-11-04</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
