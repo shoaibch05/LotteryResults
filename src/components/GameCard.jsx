@@ -22,7 +22,7 @@ const GameCard = ({
 
   // Pre-calculate number display to prevent layout shifts
   const renderNumbers = (numbers, bonusBall = null) => (
-    <div className="flex flex-wrap gap-2 items-center justify-center min-h-[40px]">
+    <div className="flex flex-wrap gap-2 items-center justify-center">
       {numbers.map((num, i) => (
         <span
           key={i}

@@ -157,7 +157,7 @@ const Home = () => {
         </div>
 
         {/* Cards - Fixed grid with consistent height */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8 min-h-[450px]">
+        <div className="grid md:grid-cols-2 gap-6 mb-8 min-h-[100px]">
           {loading ? (
             <>
               <GameCardSkeleton />
@@ -184,7 +184,7 @@ const Home = () => {
         </div>
 
         {/* Ad Banner with fixed height */}
-        <div className="min-h-[120px] mb-8">
+        <div className=" mb-8">
           {adsUnderGameCards.map((a) => (
             <AdBanner key={a.slot} slot={a.slot} height={120} />
           ))}
@@ -193,7 +193,7 @@ const Home = () => {
         <LatestPosts />
 
         {/* Ad Banner with fixed height */}
-        <div className="min-h-[120px] mb-8">
+        <div className=" mb-8">
           {adsBottom.map((a) => (
             <AdBanner key={a.slot} slot={a.slot} height={120} />
           ))}

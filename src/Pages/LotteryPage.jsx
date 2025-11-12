@@ -179,7 +179,7 @@ const LotteryPage = () => {
             <TopWinners winners={lottery.Winners} />
           </Suspense>
         </LazySection>
-        <div className="min-h-[120px] mb-8">
+        <div className=" mb-8">
           {adsBottom.map((a) => (
             <AdBanner key={a.slot} slot={a.slot} height={120} />
           ))}
