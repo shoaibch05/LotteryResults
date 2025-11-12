@@ -30,13 +30,7 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.set('trust proxy', true);
-
-app.use((req, res, next) => {
-  const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress;
-  console.log('Visitor IP:', ip);
-  next();
-});
+app.set("trust proxy", true);
 
 // ============================================
 // NEW: Serve static files (for sitemap)
