@@ -71,6 +71,9 @@ app.get("/api/test-email", async (req, res) => {
 
 // Root Route
 app.get("/", (req, res) => res.send("🎯 Lottery System Backend is running..."));
+app.get("/ping", (req, res) => {
+  res.status(200).json({ status: "ok", time: Date.now() });
+});
 
 // Server
 const PORT = process.env.PORT || 5000;
