@@ -57,7 +57,9 @@ const SEOSettings = memo(() => {
 
   const loadSitemapInfo = async () => {
     try {
-      const response = await fetch("http://localhost:5000/sitemap.xml");
+      const response = await fetch(
+        "nodejs-production-40ae.up.railway.app/sitemap.xml"
+      );
       if (response.ok) {
         const xmlText = await response.text();
         const parser = new DOMParser();
@@ -157,7 +159,7 @@ const SEOSettings = memo(() => {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/seo/sync-sitemap",
+        "nodejs-production-40ae.up.railway.app/api/seo/sync-sitemap",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -510,7 +512,7 @@ const SEOSettings = memo(() => {
 
           {/* Sitemap Status Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+            <div className="bg-linear-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
               <h3 className="text-sm font-medium text-gray-600 mb-1">
                 Total URLs
               </h3>
@@ -520,7 +522,7 @@ const SEOSettings = memo(() => {
               <p className="text-xs text-gray-500 mt-1">pages in sitemap</p>
             </div>
 
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+            <div className="bg-linear-to-br from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
               <h3 className="text-sm font-medium text-gray-600 mb-1">
                 Last Updated
               </h3>
@@ -538,7 +540,7 @@ const SEOSettings = memo(() => {
             className={`w-full py-3 px-6 text-white font-semibold rounded-lg transition-all transform ${
               sitemapSettings.isLoading
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl hover:scale-105"
+                : "bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl hover:scale-105"
             }`}
           >
             {sitemapSettings.isLoading ? (

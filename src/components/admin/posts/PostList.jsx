@@ -52,7 +52,7 @@ const PostList = memo(() => {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:5000/api/posts/${postId}`,
+        `http://nodejs-production-40ae.up.railway.app/api/posts/${postId}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },

@@ -192,7 +192,7 @@ export default function Header({ headerbgColor = "bg-white" }) {
     const fetchlogo = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5000/api/site/seo-settings"
+          "https://nodejs-production-40ae.up.railway.app/api/site/seo-settings"
         );
         if (response.ok) {
           const data = await response.json();
