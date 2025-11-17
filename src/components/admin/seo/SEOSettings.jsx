@@ -1,6 +1,7 @@
 // src/pages/SEOSettings.jsx
 import { memo, useState, useEffect, useContext } from "react";
 import { SEOContext } from "../../../context/SeoContext";
+import API_URL from process.env.VITE_API_BASE_URL
 
 const SEOSettings = memo(() => {
   const { seoSettings, loading, updateSeoSettings } = useContext(SEOContext);
@@ -58,7 +59,7 @@ const SEOSettings = memo(() => {
   const loadSitemapInfo = async () => {
     try {
       const response = await fetch(
-        "nodejs-production-40ae.up.railway.app/sitemap.xml"
+        `${API_URL}/sitemap.xml`
       );
       if (response.ok) {
         const xmlText = await response.text();
@@ -159,7 +160,7 @@ const SEOSettings = memo(() => {
 
     try {
       const response = await fetch(
-        "nodejs-production-40ae.up.railway.app/api/seo/sync-sitemap",
+        `${API_URL}/seo/sync-sitemap`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

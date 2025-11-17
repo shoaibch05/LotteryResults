@@ -2,6 +2,7 @@ import { memo, useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getAllposts, getAllRecentsPosts } from "../../../api/postApi";
+import API_URL from process.env.VITE_API_BASE_URL
 
 const PostList = memo(() => {
   const [posts, setPosts] = useState([]);
@@ -52,7 +53,7 @@ const PostList = memo(() => {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://nodejs-production-40ae.up.railway.app/api/posts/${postId}`,
+        `${API_URL}/posts/${postId}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
