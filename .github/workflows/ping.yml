@@ -11,3 +11,8 @@ jobs:
     steps:
       - name: Ping Railway backend
         run: curl -fsS https://nodejs-production-40ae.up.railway.app/ping || true
+        
+      - name: Ping DB via lightweight API query
+        run: |
+          echo "Pinging database..."
+          curl -fsS https://nodejs-production-40ae.up.railway.app/api/faqs || true
