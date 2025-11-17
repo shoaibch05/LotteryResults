@@ -4,6 +4,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import https from "https";
 
 /**
  * Copies sitemap from backend/public to frontend/public
@@ -15,46 +16,49 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const backendPath = path.join(
-  __dirname,
-  "../../Lottery Backend/public/sitemap.xml"
-);
+const backendSitemapURL =
+  "https://nodejs-production-40ae.up.railway.app/sitemap.xml";
 const frontendPath = path.join(__dirname, "../public/sitemap.xml");
 
-console.log("🔄 Syncing sitemap...");
-console.log(`   From: ${backendPath}`);
-console.log(`   To:   ${frontendPath}`);
+console.log("🔄 Downloading sitemap from backend...");
+console.log(`   URL: ${backendSitemapURL}`);
+console.log(`   Saving to: ${frontendPath}`);
 
-try {
-  // Check if backend sitemap exists
-  if (!fs.existsSync(backendPath)) {
-    console.warn(`⚠️  Backend sitemap not found at: ${backendPath}`);
-    console.log("   Make sure your backend has generated sitemap.xml");
-    process.exit(0); // Don't fail, just warn
-  }
+https
+  .get(backendSitemapURL, (response) => {
+    if (response.statusCode !== 200) {
+      console.error(
+        `❌ Failed to download sitemap. Status: ${response.statusCode}`
+      );
+      process.exit(1);
+    }
 
-  // Check if frontend public folder exists, create if not
-  const frontendPublicDir = path.dirname(frontendPath);
-  if (!fs.existsSync(frontendPublicDir)) {
-    fs.mkdirSync(frontendPublicDir, { recursive: true });
-    console.log(`   📁 Created frontend/public directory`);
-  }
+    // Ensure frontend/public exists
+    const frontendPublicDir = path.dirname(frontendPath);
+    if (!fs.existsSync(frontendPublicDir)) {
+      fs.mkdirSync(frontendPublicDir, { recursive: true });
+      console.log("📁 Created frontend/public directory");
+    }
 
-  // Copy the file
-  fs.copyFileSync(backendPath, frontendPath);
+    const fileStream = fs.createWriteStream(frontendPath);
+    response.pipe(fileStream);
 
-  // Get file size for confirmation
-  const stats = fs.statSync(frontendPath);
-  const fileSizeKB = (stats.size / 1024).toFixed(2);
+    fileStream.on("finish", () => {
+      fileStream.close();
 
-  console.log(`✅ Sitemap synced successfully!`);
-  console.log(`   File size: ${fileSizeKB} KB`);
-  console.log(`   Updated: ${new Date().toLocaleString()}`);
-} catch (error) {
-  console.error(`❌ Error syncing sitemap:`);
-  console.error(`   ${error.message}`);
-  process.exit(1);
-}
+      const stats = fs.statSync(frontendPath);
+      const fileSizeKB = (stats.size / 1024).toFixed(2);
+
+      console.log(`✅ Sitemap downloaded successfully!`);
+      console.log(`   File size: ${fileSizeKB} KB`);
+      console.log(`   Updated: ${new Date().toLocaleString()}`);
+    });
+  })
+  .on("error", (err) => {
+    console.error("❌ Error downloading sitemap:");
+    console.error(`   ${err.message}`);
+    process.exit(1);
+  });
 
 // ======================================
 // For Vite ES module projects:

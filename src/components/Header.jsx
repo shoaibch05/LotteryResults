@@ -10,7 +10,8 @@ import QuickDraw from "../assets/quick-draw-logo-white.svg";
 import Cash4Life from "../assets/cash-4-life-logo-white.svg";
 import information from "../assets/information-logo.svg";
 import { Link } from "react-router-dom";
-import API_URL from process.env.VITE_API_BASE_URL
+const API_URL = import.meta.env.VITE_API_BASE_URL;
+
 const navItems = [
   {
     logo: NYLotto,
@@ -191,9 +192,7 @@ export default function Header({ headerbgColor = "bg-white" }) {
   useEffect(() => {
     const fetchlogo = async () => {
       try {
-        const response = await fetch(
-          `${API_URL}/site/seo-settings`
-        );
+        const response = await fetch(`${API_URL}/site/seo-settings`);
         if (response.ok) {
           const data = await response.json();
           setlogo(data.data.siteLogo);

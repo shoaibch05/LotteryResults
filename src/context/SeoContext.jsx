@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useCallback } from "react";
-import API_URL from process.env.VITE_API_BASE_URL
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const SEOContext = createContext();
 
@@ -31,9 +31,7 @@ export const SEOProvider = ({ children }) => {
   const fetchSeoSettings = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        `${API_URL}/site/seo-settings`
-      );
+      const response = await fetch(`${API_URL}/site/seo-settings`);
       if (response.ok) {
         const data = await response.json();
         setSeoSettings(data.data);
@@ -48,14 +46,11 @@ export const SEOProvider = ({ children }) => {
   // Update SEO settings both locally and in backend
   const updateSeoSettings = useCallback(async (newSettings) => {
     try {
-      const response = await fetch(
-        `${API_URL}/site/seo-settings`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newSettings),
-        }
-      );
+      const response = await fetch(`${API_URL}/site/seo-settings`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newSettings),
+      });
 
       if (response.ok) {
         const data = await response.json();
