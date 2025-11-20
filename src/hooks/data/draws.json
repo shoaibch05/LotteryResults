@@ -1,0 +1,22 @@
+{
+  "powerball": {
+    "name": "Powerball",
+    "latestDraw": {
+      "date": "2025-09-25",
+      "numbers": [7, 11, 33, 45, 56],
+      "powerball": 12,
+      "jackpot": "$250 Million",
+      "nextDraw": "2025-09-28T02:00:00Z"
+    }
+  },
+  "megamillions": {
+    "name": "Mega Millions",
+    "latestDraw": {
+      "date": "2025-09-24",
+      "numbers": [5, 14, 22, 43, 66],
+      "megaball": 9,
+      "jackpot": "$300 Million",
+      "nextDraw": "2025-09-27T02:00:00Z"
+    }
+  }
+}

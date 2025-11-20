@@ -1,0 +1,171 @@
+
+{
+  "faqs": {
+    "title": "New York Lottery FAQs",
+    "categories": [
+      {
+        "category": "How to Play",
+        "items": [
+          {
+            "q": "1. How do I find how to play the lottery?",
+            "a": "You can find rules on the official NY Lottery website for each game. Visit nylottery.ny.gov/games for detailed instructions."
+          },
+          {
+            "q": "2. How much does it cost to play?",
+            "a": "Ticket prices vary by game. For example, Powerball is $2 per play, Mega Millions is $2, and NY Lotto starts at $1."
+          },
+          {
+            "q": "3. Where can I watch the draws?",
+            "a": "You can watch draws on local TV stations or on the official NY Lottery website and YouTube channel."
+          }
+        ]
+      },
+      {
+        "category": "Prize Information",
+        "items": [
+          {
+            "q": "1. How do I claim a prize?",
+            "a": "Prizes up to $600 can be claimed at authorized retailers. Larger prizes must be claimed at a Lottery Customer Service Center."
+          },
+          {
+            "q": "2. Will I be taxed on my prize?",
+            "a": "Yes. Federal and state taxes apply to prizes over $5,000. The NY Lottery reports winnings to the IRS and NY State."
+          },
+          {
+            "q": "3. Can I stay anonymous if I win?",
+            "a": "No, New York State law requires the Lottery to release your name and prize amount publicly."
+          }
+        ]
+      },
+      {
+        "category": "Game Details",
+        "items": [
+          {
+            "q": "1. What are the odds of winning?",
+            "a": "Odds depend on the game. For instance, Powerball odds of hitting the jackpot are 1 in 292,201,338."
+          },
+          {
+            "q": "2. What is Quick Pick?",
+            "a": "Quick Pick randomly generates your numbers for you instead of you selecting them manually."
+          },
+          {
+            "q": "3. What is Power Play / Megaplier?",
+            "a": "An optional feature to multiply non-jackpot prizes by 2x–10x depending on the multiplier drawn."
+          }
+        ]
+      }
+    ]
+  },
+  "about": {
+    "title": "About New York Lottery",
+    "sections": [
+      {
+        "heading": "Our Mission",
+        "content": "The New York Lottery was established in 1967 to benefit education in New York State. We're committed to providing entertaining games while supporting public education."
+      },
+      {
+        "heading": "History",
+        "content": "For over 50 years, the NY Lottery has generated billions in revenue for education, making us one of the most successful lottery programs in the nation."
+      },
+      {
+        "heading": "Responsible Gaming",
+        "content": "We encourage responsible gaming. If you need help, call the Problem Gambling Help Line at 1-877-GAMBLING (1-877-426-5328)."
+      }
+    ]
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "2024-01-15",
+    "sections": [
+      {
+        "heading": "Information We Collect",
+        "content": "We collect information you provide directly to us, such as when you create an account, play games, or contact customer service. This may include your name, email, phone number, and payment information."
+      },
+      {
+        "heading": "How We Use Your Information",
+        "content": "We use your information to process transactions, send you promotional materials, improve our services, and comply with legal obligations. We never sell your personal information to third parties."
+      },
+      {
+        "heading": "Data Security",
+        "content": "We implement industry-standard security measures to protect your information. However, no method of transmission over the internet is completely secure."
+      },
+      {
+        "heading": "Cookies",
+        "content": "We use cookies to enhance your experience on our website. You can disable cookies in your browser settings, but some features may not work properly."
+      },
+      {
+        "heading": "Contact Us",
+        "content": "If you have questions about our privacy practices, please contact us at privacy@nylottery.ny.gov or call 1-800-LOTTERY."
+      }
+    ]
+  },
+  "disclaimer": {
+    "title": "Disclaimer",
+    "sections": [
+      {
+        "heading": "No Warranty",
+        "content": "This website is provided on an 'as is' basis without warranties of any kind, either expressed or implied. We do not warrant that the site will be uninterrupted, secure, or error-free."
+      },
+      {
+        "heading": "Limitation of Liability",
+        "content": "In no event shall the NY Lottery be liable for any indirect, incidental, special, or consequential damages arising from your use of this website or services."
+      },
+      {
+        "heading": "Age Restrictions",
+        "content": "You must be 18 years or older to play lottery games in New York State. It is your responsibility to comply with all applicable laws."
+      },
+      {
+        "heading": "Governing Law",
+        "content": "This disclaimer is governed by the laws of New York State. Any disputes shall be resolved in the courts of New York County."
+      },
+      {
+        "heading": "Third-Party Links",
+        "content": "This website may contain links to third-party websites. We are not responsible for the content or practices of these external sites."
+      },
+      {
+        "heading": "Changes to Terms",
+        "content": "We reserve the right to modify this disclaimer at any time. Your continued use of the website constitutes acceptance of any changes."
+      }
+    ]
+  },
+  "sitemap": {
+    "title": "Sitemap",
+    "description": "Complete site structure and navigation",
+    "sections": [
+      {
+        "name": "Main Pages",
+        "links": [
+          {
+            "label": "Home",
+            "url": "/"
+          },
+          {
+            "label": "About",
+            "url": "/about"
+          },
+          {
+            "label": "Games",
+            "url": "/games"
+          }
+        ]
+      },
+      {
+        "name": "Resources",
+        "links": [
+          {
+            "label": "FAQs",
+            "url": "/faqs"
+          },
+          {
+            "label": "Privacy Policy",
+            "url": "/privacy"
+          },
+          {
+            "label": "Disclaimer",
+            "url": "/disclaimer"
+          }
+        ]
+      }
+    ]
+  }
+}

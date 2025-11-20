@@ -15,7 +15,9 @@ const Sitemap = () => {
       setLoading(true);
 
       // Fetch from your backend sitemap endpoint
-      const response = await fetch("http://localhost:5000/sitemap.xml");
+      const response = await fetch(
+        "https://nodejs-production-40ae.up.railway.app//sitemap.xml"
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch sitemap");
