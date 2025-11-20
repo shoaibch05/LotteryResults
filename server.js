@@ -75,6 +75,8 @@ app.get("/ping", (req, res) => {
   res.status(200).json({ status: "ok", time: Date.now() });
 });
 
+//updated
+
 // Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
