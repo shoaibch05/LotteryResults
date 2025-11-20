@@ -58,7 +58,9 @@ const SEOSettings = memo(() => {
 
   const loadSitemapInfo = async () => {
     try {
-      const response = await fetch(`${API_URL}/sitemap.xml`);
+      const response = await fetch(
+        `https://nodejs-production-40ae.up.railway.app/sitemap.xml`
+      );
       if (response.ok) {
         const xmlText = await response.text();
         const parser = new DOMParser();
